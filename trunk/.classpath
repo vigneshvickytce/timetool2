@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/httpunit.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/js.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/junit.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/nekohtml.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/xercesImpl.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/mysql-connector-java-3.1.11-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/msbase.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/mssqlserver.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/hdarcy/workspace/TimeTool/jars/msutil.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

@@ -1,0 +1,10 @@
+select customer as task_id, project as task_name, Task as description_id, Task as description_text from rp_ProjectTasks where TaskActive = 'A' and project in ('D-211', 'C-ANDE02-BAYP-01', 'C-EDWA05-NRIV-NR', 'C-KOHL01-MENO-WI', 'C-LIBT01-PORT-FL', 'C-SUPR03-EDEN-ED', 'C-BRIG05-WAUW-WI', 'C-DSCL01-CORP-01', 'C-GAP02-ERLA-KY', 'C-MARM03-BRID-VA', 'C-LOWE02-MOOR-NC', 'S-NDC001-CORP-01')
+
+
+View name: rp_ProjectTasks
+SQL Server name: PIKA
+Database name: corporate
+Loginid: implservdev
+Password: dlfrd20
+
+

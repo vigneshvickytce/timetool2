@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+   <link REL="stylesheet" HREF="http://www.hamletdarcy.com/base.css" TYPE="text/css">
+   <TITLE>Mi Vida Poco</TITLE>
+
+   <meta content="TimeTool, Project Mangagement, Time Tracking, TimeTool, Timeclock" name="KEYWORDS" />
+   <script language="JavaScript" src="http://www.hamletdarcy.com/menu.js"></script>
+   <script language="JavaScript" src="timetool.js"></script>
+</head>
+
+<body>
+
+<script type="text/javascript" language="javascript1.2">
+   print_short_menu(); 
+   timetool_header(); 
+</script>
+
+   <h3>General Use</h3>
+   This is a very simple time tracking application. 
+   <ul>
+      <li>Add your task and clients by clicking "Add Task"  </li>
+      <li>Click that task in the grid to start tracking time against it</li>
+      <li>After 8 hours have accrued, I suggest leaving work and going home</li>
+   </ul>
+   <h3>Feature List</h3>
+   <ul>
+      <li><a href="#MySQL_Database_Support">MySQL Database Support</a></li>
+      <li>Many localizations available, including <img src="http://www.hamletdarcy.com/timetool/flag_us.gif"> US English, 
+         <img src="http://www.hamletdarcy.com/timetool/flag_de.gif"> German, 
+         <img src="http://www.hamletdarcy.com/timetool/flag_fr.gif"> French, 
+         <img src="http://www.hamletdarcy.com/timetool/flag_nl.gif"> Dutch, and 
+         <img src="http://www.hamletdarcy.com/timetool/flag_ja.gif"> Japanese 
+      <li>Export to CSV. Export options are available under File->Options</li>
+      <li>Sortable Columns</li>
+      <li>Minimizes to tray</li>
+      <li>Tracks time across time zones</li>
+   </ul>
+   <h4><a name="MySQL_Database_Support">MySQL Database Support</a></h4>
+<p>TimeTool allows you to pull task and description lists from a MySQL database.
+</p>
+<table>
+ <tr>
+ 	<td width="50%">
+	 	<ol>
+	 		<li>Open the Options screen</li>
+	 		<li>Select the MySQL Tab (shown at right)</li>
+	 		<li>Do not change the JDBC driver entry. MySQL is the only tested database at this time.</li>
+	 		<li>Change the Database URL to be location of your database. The format for the url is "jdbc:mysql://servername/databasename"</li>
+	 		<li>Enter the database user name in the User Name field. </li>
+	 		<li>Enter the database password in the password field. Warning: this is stored as plain text on disk. </li>
+	 		<li>Alter the SQL to return a query from your database with the following columns: 
+	 			<ul>
+	 				<li>task_id</li>
+	 				<li>task_name</li>
+	 				<li>description_id</li>
+	 				<li>description_text</li>
+	 			</ul>
+	 		</li>
+	 		<li>Check the enabled checkbox</li>
+	 		<li>Click OK</li>
+	 		
+	 	</ol>
+	</td>
+ 	<td><img src="MySQLOptions.GIF" alt="Options Screen"></td>
+ </tr>
+</table>
+<p align="center">
+Once configured, the add task dialog will contain two <br>
+drop down lists instead of free form text entry. 
+<br>
+<img src="MySQLAddTask.GIF" alt="Add Task">
+</p>
+<script type="text/javascript" language="javascript1.2">
+   timetool_footer(); 
+</script>
+   
+  </body>
+</html>

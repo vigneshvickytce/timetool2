@@ -1,0 +1,163 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Sep 20, 2005 8:14:41 PM                                                        
+
+     Hamlet    
+     Hamlet's Project
+                   
+     hdarcy                                                                
+     ====================================================================== -->
+<project name="TimeTool" default="default">
+    <description>
+            TimeTool Project
+    </description>
+	
+	<!--build crap -->
+	<property name="src" location="src"/>
+	<property name="docs" location="docs"/>
+	<property name="build" location="bin"/>
+	<property name="junit.dir" location="jars"/>
+	
+	<path id="classpath.all">
+	   <pathelement location="${junit.dir}/junit.jar" />
+	   <pathelement location="${build}" />
+	   <pathelement location="${src}" />
+	</path>
+	
+	<target name="init">
+	   <tstamp/>
+	   <mkdir dir="${build}" />
+	</target>
+
+   <target name="testall" depends="" description="perform JUnit tests">
+
+      <junit fork="true"
+             maxmemory="512m"
+             filtertrace="off"
+             printsummary="false"
+             errorProperty="test.failed"
+             failureProperty="test.failed">
+
+         <!-- define system properties needed by the tests -->
+         <!-- for other tests -->
+         <formatter type="brief" usefile="false" />
+         <batchtest>
+            <fileset dir="${build}">
+               <include name="com.timeTool.test.AllTests.class" />
+            </fileset>
+         </batchtest>
+      </junit>
+
+      <fail if="test.failed"
+            message="JUnit tests did not pass" />
+
+   </target>
+   
+   <target name="clean"
+           description="remove generated directories, forcing them to be rebuilt">
+      <!-- Delete the output directory trees -->
+      <!-- 
+         Note: delete report & javadoc trees separately - they're not under 
+         build or dist on nightly build server 
+      -->
+      <delete dir="${build}" />
+   </target>
+
+   <target name="compile" description="compile all source" depends="init">
+
+      <!-- Compile the java code from ${src} into ${build} -->
+      <javac srcdir="${src}" destdir="${build}" debug="on">
+         <classpath refid="classpath.all" />
+      </javac>
+
+
+   </target>
+
+   <target name="copydata"
+           description="copy all data files to distribution directories">
+
+      <!-- copy all data files from src to build directories -->
+      <copy todir="${build}">
+         <fileset dir="${src}">
+            <include name="**/*.properties" />
+         </fileset>
+         <fileset dir="${src}">
+            <include name="**/*.gif" />
+         </fileset>
+         <fileset dir="" excludes="**/ttdata2.txt">
+            <include name="**/*.dll"/>
+            <include name="**/*.txt"/>
+            <include name="**/trayicon.gif"/>
+            <include name="**/build.xml"/>
+            <include name="**/mysqloptions.xml"/>
+            <include name="**/MANIFEST.MF" />
+            <include name="**/*.ico" />
+            <include name="**/*.lnk" />
+         </fileset>
+      </copy>
+
+      <copy todir="${build}\src">
+         <fileset dir="${src}">
+            <include name="**/*.*" />
+         </fileset>
+      </copy>
+
+      <copy todir="${build}\docs">
+         <fileset dir="${docs}">
+            <include name="*.*" />
+         </fileset>
+      </copy>
+
+      <copy todir="${build}\jars">
+         <fileset dir="jars">
+            <include name="*.*" />
+         </fileset>
+      </copy>
+
+      
+
+   </target>
+
+   <target name="buildjar"
+           depends="compile, copydata"
+           description="generate distribution of source">
+
+      <jar jarfile="${build}/TimeTool.jar" manifest="${build}/META-INF/MANIFEST.MF">
+         <fileset dir="${build}" includes="**/*.*" />
+      </jar>
+      
+   </target>
+
+   <target name="zipfile"
+         depends=""
+         description="builds the zip file for the ftp site">
+      
+      <zip destfile="TimeTool.zip"
+      basedir="${build}"
+      />
+      
+      <exec dir="" executable="cmd.exe">
+         <arg line="/c wzipse32 TimeTool.zip -y -d &quot;C:\Program Files\TimeTool&quot;"/>
+      </exec>
+   </target>
+	
+	
+	
+
+   
+	<!-- ================================= 
+          target: deploy
+         ================================= -->
+    <target name="deploy" depends="zipfile" description="TimeTool Project">
+        
+    </target>
+
+	<!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" depends="clean,init,compile,copydata,testall,buildjar" description="TimeTool Project">
+        
+    </target>
+
+</project>
+
