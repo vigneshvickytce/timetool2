@@ -1,0 +1,70 @@
+TimeTool. 
+
+File.
+Reload.
+Save.
+Export to CSV...
+Options.
+Quit.
+
+Stop the Clock.
+Adjust Time.
+Reset All Times.
+Add Task.
+Delete Task.
+Rename Task.
+
+Help.
+View. 
+Home Page.
+Contact Support.
+About.
+
+Reset All Times to Zero.
+Display About Dialog.
+
+Task.
+Description.
+Minutes.
+Hours.
+
+No Active Task.
+Confirm Reset.
+Are you sure you want to reset all the tasks?
+Confirm Delete.
+Are you sure you want to delete the selected task?
+Adjust Time.
+Adjustment. 
+or.
+About.
+Java Based Version.
+TimeTool is free software distributed under the terms of the GNU GPL
+
+
+Add a Task.
+Description:
+Task ID:
+Rename a Task.
+
+
+Quotes (default double quote):
+Decimal (default period):
+Delimiter (default comma):
+HOURS.
+MINUTES.
+Project. 
+Name. 
+Number. 
+
+
+Could not find web browser.
+Error attempting to launch web browser.
+did not catch exception.
+Error.
+Information.
+Entry must be numeric.
+You must first select the task you want to adjust.
+OK.
+Cancel.
+
+

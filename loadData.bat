@@ -1,0 +1,1 @@
+mysql -D test -u root -psa < TestData.sql
