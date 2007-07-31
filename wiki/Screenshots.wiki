@@ -1,14 +1,15 @@
 #summary Screenshots of the application in several languages
 #labels Featured
 
-= Introduction =
-
-Add your content here.
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+This is a collection of screenshots from the different localizations available.
+English Screenshots
+|| http://www.hamletdarcy.com/timetool/timetool_us.gif || http://www.hamletdarcy.com/timetool/mac_english.png ||
+	
+German Screenshots
+	
+French Screenshots
+	
+Dutch (NL) Screenshots
+	
+Japanese Screenshots
+	
