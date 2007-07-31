@@ -1,4 +1,4 @@
-#summary Describes major features of TimeTool
+#summary Featured
 
 = General Use =
 
