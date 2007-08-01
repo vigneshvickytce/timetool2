@@ -11,6 +11,7 @@ This is a very simple time tracking application.
 
 = Feature List =
 
+  * Added +, -, and numeric hotkeys for mouseless time adjustments
   * MySQL Database Support
   * Many localizations available, including US English, German, French, Dutch, and Japanese
   * Export to CSV. Export options are available under File->Options
@@ -43,5 +44,4 @@ http://www.hamletdarcy.com/timetool/MySQLOptions.png
 Once configured, the add task dialog will contain two
 drop down lists instead of free form text entry.
 Add Task 
-
 
