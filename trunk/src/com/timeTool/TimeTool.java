@@ -433,7 +433,7 @@ public class TimeTool extends Observable
 	{
 		try
 		{
-			timeToolWindow = new TimeToolWindow(KeyboardFocusManager.getCurrentKeyboardFocusManager());
+			timeToolWindow = new TimeToolWindow();
 			timeToolWindow.show(); 
 	    }
 		catch (Exception e)

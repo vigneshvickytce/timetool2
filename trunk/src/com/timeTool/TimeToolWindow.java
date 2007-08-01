@@ -1,17 +1,50 @@
 package com.timeTool;
 
+import com.jeans.trayicon.WindowsTrayIcon;
+import com.timeTool.actions.AboutAction;
+import com.timeTool.actions.AddAction;
+import com.timeTool.actions.AdjustAction;
+import com.timeTool.actions.AdjustTimeKeyHandler;
+import com.timeTool.actions.DeleteAction;
+import com.timeTool.actions.ExportAction;
+import com.timeTool.actions.HelpAction;
+import com.timeTool.actions.HomePageAction;
+import com.timeTool.actions.LicenseAction;
+import com.timeTool.actions.OptionsAction;
+import com.timeTool.actions.QuitAction;
+import com.timeTool.actions.ReloadAction;
+import com.timeTool.actions.RenameAction;
+import com.timeTool.actions.ResetAction;
+import com.timeTool.actions.SaveAction;
+import com.timeTool.actions.StopAction;
+import com.timeTool.actions.SupportAction;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.KeyEvent;
 import java.util.Observable;
 import java.util.Observer;
-import java.awt.*;
-import java.awt.event.*;
 
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JViewport;
+import javax.swing.KeyStroke;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
-
-import com.jeans.trayicon.WindowsTrayIcon;
-import com.timeTool.actions.*;
 
 public class TimeToolWindow extends JPanel implements Observer
 {
@@ -39,7 +72,7 @@ public class TimeToolWindow extends JPanel implements Observer
     	    };
 	private static WindowsTrayIcon trayIcon;
 
-    TimeToolWindow(KeyboardFocusManager keyboardManager) {
+    TimeToolWindow() {
     	super(true);
     	TimeTool.resources = new ResourceAutomation(this); 
     	TimeTool.resources.setLookAndFeel();
@@ -67,7 +100,22 @@ public class TimeToolWindow extends JPanel implements Observer
                 }
             }, KeyStroke.getKeyStroke(key), JComponent.WHEN_IN_FOCUSED_WINDOW);
         }
-    }
+
+
+		registerKeyboardAction(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {
+					int row = TimeTool.getInstance().getCurrentRow();
+					TimeTool.getInstance().setCurrentRow(--row);
+                }
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+		registerKeyboardAction(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {
+					int row = TimeTool.getInstance().getCurrentRow();
+					TimeTool.getInstance().setCurrentRow(++row);
+				}
+            }, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+	}
 
     private void initPanel(JScrollPane scroller)
 	{
@@ -97,7 +145,7 @@ public class TimeToolWindow extends JPanel implements Observer
 		taskList.setColumnSelectionAllowed(false); 
     	taskList.setShowVerticalLines(false); 
     	taskList.setShowHorizontalLines(false);
-    	trapTableClick();
+		trapTableClick();
     	trapColumnClick(); 
 	}
 	
