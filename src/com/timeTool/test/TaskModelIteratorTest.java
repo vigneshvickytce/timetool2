@@ -9,12 +9,12 @@ import junit.framework.TestCase;
 
 public class TaskModelIteratorTest extends TestCase
 {
-	TimeTool data = TimeTool.getInstance(); 
+	TimeTool data = new TimeTool(); 
 
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 	}
 
@@ -23,7 +23,7 @@ public class TaskModelIteratorTest extends TestCase
 	 */
 	public void testGetFirst()
 	{
-		TaskIterator iterator = new TaskIterator(); 
+		TaskIterator iterator = new TaskIterator(data);
 		Task row = iterator.getFirst(); 
 		assertEquals("1", row.getId()); 
 		assertEquals("Anderson - Billed", row.getDescription()); 
@@ -36,7 +36,7 @@ public class TaskModelIteratorTest extends TestCase
 	 */
 	public void testGetNext()
 	{
-		TaskIterator iterator = new TaskIterator(); 
+		TaskIterator iterator = new TaskIterator(data);
 		iterator.getFirst(); 
 		Task row = iterator.getNext(); 
 		assertEquals("1", row.getId()); 

@@ -9,16 +9,24 @@ import javax.swing.table.TableColumnModel;
 
 public class ColumnHeaderListener extends MouseAdapter 
 {
-	public void mouseClicked(MouseEvent evt) 
-	{
-        JTableHeader tableHeader = (JTableHeader)evt.getSource(); 
-        JTable table = tableHeader.getTable();
-        TableColumnModel colModel = table.getColumnModel();
+	private final TimeTool controller;
 
-        // The index of the column whose header was clicked
-        int index = colModel.getColumnIndexAtX(evt.getX());
-        TimeTool.getInstance().sort(index);  
-        //tableHeader.set
-    }
+
+	public ColumnHeaderListener(TimeTool controller) {
+		this.controller = controller;
+	}
+
+
+	public void mouseClicked(MouseEvent evt)
+	{
+		JTableHeader tableHeader = (JTableHeader)evt.getSource();
+		JTable table = tableHeader.getTable();
+		TableColumnModel colModel = table.getColumnModel();
+
+		// The index of the column whose header was clicked
+		int index = colModel.getColumnIndexAtX(evt.getX());
+		controller.sort(index);
+		//tableHeader.set
+	}
 
 }

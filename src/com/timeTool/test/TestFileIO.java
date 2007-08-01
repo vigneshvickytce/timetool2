@@ -20,19 +20,27 @@ import junit.framework.TestCase;
 public class TestFileIO extends TestCase
 {
 	private static final String TEST_CSV = "test.csv";
-	
+	private TimeTool data;
+
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		data = new TimeTool();
+	}
+
+
 	public void tearDown()
 	{
 		File deleteFile = new File(TEST_CSV); 
 		deleteFile.delete(); 
 		deleteFile = new File(ExportOptions.OPTIONS_FILENAME); 
-		deleteFile.delete(); 
+		deleteFile.delete();
 	}
 	
 	public void test1Load()
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 		assertEquals(10, data.getRowCount()); 
 		assertEquals("1", data.getValueAt(0,0)); 
@@ -48,8 +56,7 @@ public class TestFileIO extends TestCase
 	
 	public void test2Delete()
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 		assertEquals(10, data.getRowCount()); 
 		data.removeRow(9); 
@@ -62,8 +69,7 @@ public class TestFileIO extends TestCase
 	
 	public void test3Save() throws Exception
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 
 		assertEquals(10, data.getRowCount()); 
@@ -80,8 +86,7 @@ public class TestFileIO extends TestCase
 	
 	public void test4Reload()
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 
 		assertEquals(10, data.getRowCount()); 
@@ -93,8 +98,7 @@ public class TestFileIO extends TestCase
 
 	public void test4Export()  throws Exception
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence filewriter = new TimePersistence(); 
+		TimePersistence filewriter = new TimePersistence(data);
 		filewriter.loadFile(data); 
 		filewriter.exportFile(data, TEST_CSV); 
 
@@ -113,8 +117,7 @@ public class TestFileIO extends TestCase
 		options.setDecimal("s"); 
 		options.serialize(); 
 		
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence filewriter = new TimePersistence(); 
+		TimePersistence filewriter = new TimePersistence(data);
 		filewriter.loadFile(data); 
 		filewriter.exportFile(data, TEST_CSV); 
 
@@ -130,8 +133,7 @@ public class TestFileIO extends TestCase
 	}
 	public void test6Reset()  throws Exception
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 		data.reset(); 
 		Task record = data.get(4); 
@@ -144,13 +146,12 @@ public class TestFileIO extends TestCase
 	public void testDefaultFilename()
 	{
 		Date date = new Date(1134199999999L); //this long is 12/10/2005
-		String filename = TimeTool.getInstance().getDefaultFilename(date);
-		assertEquals("20051210.csv", filename);  
+		String filename = data.getDefaultFilename(date);
+		assertEquals("20051210.csv", filename);
 	}
 	public void testCurrentRow() throws Exception
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data);
 		assertEquals(-1, data.getCurrentRow()); 
 		data.setCurrentRow(3); 
@@ -160,33 +161,4 @@ public class TestFileIO extends TestCase
 		assertEquals(3, data.getCurrentRow()); 
 	}
 	
-	public void testCurrentTime() throws Exception
-	{
-		TimeTool data = TimeTool.getInstance(); 
-		TimePersistence file = new TimePersistence(); 
-		
-		Date now = data.getTimerStartTime(); 
-		file.loadFile(data);
-		assertEquals(now, data.getTimerStartTime()); 
-		
-		Task task = data.get(3); 
-		assertEquals("0", task.getMinutes()); 
-		
-		data.setCurrentRow(3); 
-		Date oneHourAgo = new Date(now.getTime()); 
-		oneHourAgo.setHours(oneHourAgo.getHours() - 1); 
-		data.setStartTime(oneHourAgo); 
-		
-		System.out.println("one hour ago" + oneHourAgo.toString()); 
-		System.out.println("one hour ago2: " + TimeTool.getInstance().getTimerStartTime().toString()); 			
-		
-		file.saveFile(data, TXTVisitor.DATA_FILE); 
-		file.loadFile(data);
-
-		TimeTool.getInstance().tick(); 
-		
-		//assertEquals(oneHourAgo.toString(), data.getTimerStartTime().toString());
-		task = data.get(3); 
-		assertEquals("60", task.getMinutes()); 
-	}
 }

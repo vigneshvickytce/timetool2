@@ -3,30 +3,31 @@ package com.timeTool;
 public class TaskIterator
 {
 	private int rowCount; 
-	public TaskIterator()
+	private final TimeTool controller;
+
+	public TaskIterator(TimeTool controller)
 	{
-		rowCount = 0; 
+		rowCount = 0;
+		this.controller = controller;
 	}
 	
 	public Task getFirst()
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		Task task = null; 
-		if (data.getRowCount() > 0)
+		Task task = null;
+		if (controller.getRowCount() > 0)
 		{
-			task = data.get(0);
+			task = controller.get(0);
 		}
 		rowCount = 1;
 		return task; 
 	}
 	public Task getNext()
 	{
-		TimeTool data = TimeTool.getInstance(); 
-		Task task = null; 
+		Task task = null;
 		
-		if (data.getRowCount() > rowCount)
+		if (controller.getRowCount() > rowCount)
 		{
-			task = data.get(rowCount); 
+			task = controller.get(rowCount); 
 			rowCount++;
 		}
 		return task; 

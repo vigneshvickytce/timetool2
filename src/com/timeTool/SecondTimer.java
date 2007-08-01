@@ -6,14 +6,17 @@ import javax.swing.AbstractAction;
 
 public class SecondTimer extends AbstractAction
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1131558329689813598L;
+	private TimeTool controller;
+
+
+	public SecondTimer(TimeTool controller) {
+		this.controller = controller;
+	}
+
 
 	public void actionPerformed(ActionEvent arg0)
 	{
-		TimeTool.getInstance().tick();  		
+		controller.tick();
 	}
 
 }

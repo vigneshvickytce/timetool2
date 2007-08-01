@@ -1,20 +1,23 @@
 package com.timeTool.actions;
 
+import com.timeTool.TimeTool;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.timeTool.TimeTool;
-
 public class AdjustAction extends AbstractAction {
 
-	public static final String adjustAction   = "adjust";  
-	
-	public AdjustAction() {
-	    super(adjustAction);
+	public static final String adjustAction   = "adjust";
+	private final TimeTool controller; 
+
+
+	public AdjustAction(TimeTool controller) {
+		super(adjustAction);
+		this.controller = controller;
 	}
     
     public void actionPerformed(ActionEvent e) {
-    	TimeTool.getInstance().adjustTime(null); 
+    	controller.adjustTime(null);
 	}
 }

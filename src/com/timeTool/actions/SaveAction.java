@@ -1,26 +1,25 @@
 package com.timeTool.actions;
 
+import com.timeTool.TimeTool;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.timeTool.TimeTool;
-
 
 public class SaveAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -8391794940416088293L;
-	public static final String saveAction     = "save";    
-    
-    public SaveAction() 
+	public static final String saveAction     = "save";
+	private final TimeTool controller;
+
+
+	public SaveAction(TimeTool controller)
 	{
-	    super(saveAction);
+		super(saveAction);
+		this.controller = controller;
 	}
     public void actionPerformed(ActionEvent e) 
     {
-		TimeTool.getInstance().saveTaskList(); 
+		controller.saveTaskList();
 	}
 }

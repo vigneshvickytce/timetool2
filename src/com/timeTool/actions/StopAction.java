@@ -1,27 +1,26 @@
 package com.timeTool.actions;
 
+import com.timeTool.TimeTool;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.timeTool.TimeTool;
-
 public class StopAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -5837759531259238087L;
-	public static final String stopAction     = "stop";    
-    
-    public StopAction() 
+	public static final String stopAction     = "stop";
+	private final TimeTool controller;
+
+
+	public StopAction(TimeTool controller)
 	{
-	    super(stopAction);
+		super(stopAction);
+		this.controller = controller; 
 	}
     
     public void actionPerformed(ActionEvent e) 
     {
-    	TimeTool.getInstance().setCurrentRow(TimeTool.NO_ROW_SELECTED); 
+    	controller.setCurrentRow(TimeTool.NO_ROW_SELECTED);
 	}
 
 

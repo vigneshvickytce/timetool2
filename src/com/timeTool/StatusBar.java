@@ -13,29 +13,28 @@ import javax.swing.plaf.basic.BasicBorders;
 
 public class StatusBar extends JComponent implements Observer
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -3404312053958902491L;
 	private JLabel dayOfWeek;
 	private JLabel time;
 	private JLabel date; 
 	private JLabel task; 
 	private JLabel minuteTotal; 
-	private JLabel hourTotal; 
-	
-	public StatusBar() 
-    {
-	    super();
-	    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+	private JLabel hourTotal;
+	private final TimeTool controller;
+
+
+	public StatusBar(TimeTool controller)
+	{
+		super();
+		this.controller = controller;
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		addTimeField();
-		addDayOfWeekField(); 
-		addDateField(); 
+		addDayOfWeekField();
+		addDateField();
 		addTaskField();
 		addMinuteField();
 		addHourField();
-		TimeTool.getInstance().addObserver(this); 
-    }
+		controller.addObserver(this);
+	}
 	private void addHourField()
 	{
 		hourTotal = new JLabel(); 
@@ -78,7 +77,7 @@ public class StatusBar extends JComponent implements Observer
 	}
 	private void updateFields()
 	{
-		Date currentTime = TimeTool.getInstance().getTime();  
+		Date currentTime = controller.getTime();
 		
 		time.setText(DateFormat.getTimeInstance().format(currentTime)); 
 		date.setText(DateFormat.getDateInstance().format(currentTime)); 
@@ -86,10 +85,10 @@ public class StatusBar extends JComponent implements Observer
 		SimpleDateFormat df = new SimpleDateFormat("E"); 
 		dayOfWeek.setText(df.format(currentTime)); 
 		
-		minuteTotal.setText(TimeTool.getInstance().getTotalMinutes()); 
+		minuteTotal.setText(controller.getTotalMinutes());
 		
-		hourTotal.setText(TimeTool.getInstance().getTotalHours()); 
+		hourTotal.setText(controller.getTotalHours());
 		
-		task.setText(TimeTool.getInstance().getCurrentTask());
+		task.setText(controller.getCurrentTask());
 	}
 }

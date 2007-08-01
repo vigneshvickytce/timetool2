@@ -1,26 +1,26 @@
 package com.timeTool.actions;
 
+import com.timeTool.TimeTool;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.timeTool.TimeTool;
-
 
 public class ResetAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 8331275723922788297L;
-	public static final String resetAction    = "reset";   
-	public ResetAction() 
+	public static final String resetAction    = "reset";
+	private final TimeTool controller;
+
+
+	public ResetAction(TimeTool controller)
 	{
-	    super(resetAction);
+		super(resetAction);
+		this.controller = controller; 
 	}
     public void actionPerformed(ActionEvent e) 
     {
-		TimeTool.getInstance().resetDialog();
+		controller.resetDialog();
 
 	}
 }

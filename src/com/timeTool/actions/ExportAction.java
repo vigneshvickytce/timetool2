@@ -1,25 +1,26 @@
 package com.timeTool.actions;
 
-import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
 import com.timeTool.TimeTool;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 
 
 public class ExportAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1184213403685600369L;
-	public static final String exportAction   = "export";  
+	public static final String exportAction   = "export";
+	private final TimeTool controller;
 
-	public ExportAction() 
+
+	public ExportAction(TimeTool controller)
 	{
-	    super(exportAction);
+		super(exportAction);
+		this.controller = controller; 
 	}
     public void actionPerformed(ActionEvent e) 
     {
-    	TimeTool.getInstance().exportTaskList();  
+    	controller.exportTaskList();
 	}
 
 }
