@@ -22,7 +22,7 @@ This is a very simple time tracking application.
 
 TimeTool allows you to pull task and description lists from a MySQL database.
 
-|| # Open the Options screen || http://www.hamletdarcy.com/timetool/MySQLOptions.GIF ||
+  # Open the Options screen  
   # Select the MySQL Tab (shown at right)
   # Do not change the JDBC driver entry. MySQL is the only tested database at this time.
   # Change the Database URL to be location of your database. The format for the url is "jdbc:mysql://servername/databasename"
@@ -35,6 +35,8 @@ TimeTool allows you to pull task and description lists from a MySQL database.
     * description_text
   # Check the enabled checkbox
   # Click OK 
+
+<img src="http://www.hamletdarcy.com/timetool/MySQLOptions.GIF">
 
 = Options Screen =
 
