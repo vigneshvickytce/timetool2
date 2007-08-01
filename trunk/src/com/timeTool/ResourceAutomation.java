@@ -38,7 +38,7 @@ public class ResourceAutomation
     private TimeToolWindow owner; 
     private Hashtable menuItems;
     private JMenuBar menubar;
-    private static Hashtable commands;
+    private static Hashtable<String, Action> commands;
     
     public static final String imageSuffix = "Image";
     public static final String labelSuffix = "Label";
@@ -90,32 +90,34 @@ public class ResourceAutomation
     /**
      * Create the toolbar.  By default this reads the 
      * resource file for the definition of the toolbar.
+     * @return
+     *      the toolbar component
      */
     public Component createToolbar() 
     {
 		toolbar = new JToolBar();
 		String[] toolKeys = tokenize(getResourceString("toolbar"));
-		for (int i = 0; i < toolKeys.length; i++) 
-		{
-		    if (toolKeys[i].equals("-")) 
-		    {
-		    	toolbar.add(Box.createHorizontalStrut(5));
-		    } 
-		    else 
-		    {
-		    	toolbar.add(createTool(toolKeys[i]));
-		    }
-		}
-		toolbar.add(Box.createHorizontalGlue());
+        for (String toolKey : toolKeys) {
+            if (toolKey.equals("-")) {
+                toolbar.add(Box.createHorizontalStrut(5));
+            } else {
+                toolbar.add(createTool(toolKey));
+            }
+        }
+        toolbar.add(Box.createHorizontalGlue());
 		return toolbar;
     }
     /**
      * Hook through which every toolbar item is created.
+     * @return
+     *      toolbar button
+     * @param key
+     *      key of toolbar button
      */
-    public Component createTool(String key) 
-    {
+    public Component createTool(String key) {
     	return createToolbarButton(key);
     }
+
     /**
      * Create a button to go inside of the toolbar.  By default this
      * will load an image resource.  The image filename is relative to
@@ -124,45 +126,39 @@ public class ResourceAutomation
      * 
      * @param key The key in the resource file to serve as the basis
      *  of lookups.
+     * @return
+     *      JBUtton
      */
     public JButton createToolbarButton(String key) 
     {
     	URL url = getResource(key + imageSuffix);
-        JButton b = new JButton(new ImageIcon(url)) 
-        {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -9176328438451506073L;
-			public float getAlignmentY() { return 0.5f; }
+        JButton button = new JButton(new ImageIcon(url)) {
+			public float getAlignmentY() {
+                return 0.5f;
+            }
         };
-        b.setRequestFocusEnabled(false);
-        b.setMargin(new Insets(1,1,1,1));
+        button.setRequestFocusEnabled(false);
+        button.setMargin(new Insets(1,1,1,1));
 
-        String astr = getResourceString(key + actionSuffix);
+        String actionString = getResourceString(key + actionSuffix);
         
-		if (astr == null) 
-		{
-		    astr = key;
+		if (actionString == null) {
+		    actionString = key;
 		}
-		Action a = getAction(astr);
-		if (a != null) 
-		{
-		    b.setActionCommand(astr);
-		    b.addActionListener(a);
-		} 
-		else 
-		{
-		    b.setEnabled(false);
+		Action action = getAction(actionString);
+		if (action != null) {
+		    button.setActionCommand(actionString);
+		    button.addActionListener(action);
+		} else {
+		    button.setEnabled(false);
 		}
 
 		String tip = getResourceString(key + tipSuffix);
-		if (tip != null) 
-		{
-		    b.setToolTipText(tip);
+		if (tip != null) {
+		    button.setToolTipText(tip);
 		}
 	 
-	  	return b;
+	  	return button;
     }
 
 
@@ -206,8 +202,7 @@ public class ResourceAutomation
     }
 
 
-    public Action getAction(String cmd) 
-    {
+    public Action getAction(String cmd) {
     	return (Action) commands.get(cmd);
     }
 
@@ -268,7 +263,6 @@ public class ResourceAutomation
      * This is the hook through which all menu items are
      * created.  It registers the result with the menuitem
      * hashtable so that it can be fetched with getMenuItem().
-     * @see #getMenuItem
      */
     protected JMenuItem createMenuItem(String cmd) 
     {
@@ -396,12 +390,12 @@ public class ResourceAutomation
 	public void createCommandTable()
 	{
 		// install the command table
-    	commands = new Hashtable();
+    	commands = new Hashtable<String, Action>();
     	for (int i = 0; i < owner.getActions().length; i++) 
     	{
-    	    Action a = owner.getActions()[i];
+    	    Action action = owner.getActions()[i];
     	    //commands.put(a.getText(Action.NAME), a);
-    	    commands.put(a.getValue(Action.NAME), a);
+    	    commands.put((String) action.getValue(Action.NAME), action);
     	}
 	}
 

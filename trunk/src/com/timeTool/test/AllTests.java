@@ -2,6 +2,7 @@ package com.timeTool.test;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import com.timeTool.actions.AdjustTimeKeyHandlerTest;
 
 /**
  * Run all the tests
@@ -25,7 +26,8 @@ public class AllTests
 	{
 		TestSuite suite = new TestSuite("Test for timeTool");
 		//$JUnit-BEGIN$
-		suite.addTestSuite(TimeToolTest.class);
+        suite.addTestSuite(AdjustTimeKeyHandlerTest.class);
+        suite.addTestSuite(TimeToolTest.class);
 		suite.addTestSuite(TaskTest.class);
 		suite.addTestSuite(TestFileIO.class);
 		suite.addTestSuite(ExportOptionsTest.class);

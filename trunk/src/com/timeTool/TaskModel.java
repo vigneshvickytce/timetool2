@@ -3,7 +3,7 @@ package com.timeTool;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class TaskModel extends ArrayList
+public class TaskModel extends ArrayList<Task>
 {
 	/**
 	 * 
@@ -18,8 +18,6 @@ public class TaskModel extends ArrayList
 		super(); 
 	}
 
-	//TODO: figure out how to remove this warning
-	@SuppressWarnings("unchecked")  
 	public void sort(int index)
 	{
 		if (indexOutOfRange(index)) 
@@ -33,7 +31,7 @@ public class TaskModel extends ArrayList
 		}
 		sortColumn = index; 
 		
-		if (ascending == true)
+		if (ascending)
 		{
 			if (sortColumn == TaskSort.ID_SORT)
 			{

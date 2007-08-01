@@ -1,16 +1,11 @@
 package com.timeTool;
 
-import java.awt.FileDialog;
+import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Observable;
 
-import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.Timer;
-import com.jeans.trayicon.*;
+import javax.swing.*;
 
 
 public class TimeTool extends Observable
@@ -25,18 +20,17 @@ public class TimeTool extends Observable
     public static ResourceAutomation resources;
 	private static TimeToolWindow timeToolWindow; 
 
-	static
-    {
+	static {
     	ResourceAutomation.initResources(); 
     }
 
-    private TimeTool()
-	{
+    private TimeTool() {
 		rows = new TaskModel(); 
 		currentRow = NO_ROW_SELECTED;
 		setStartTime(null); 
 	}
-	public static TimeTool getInstance()
+    
+    public static TimeTool getInstance()
     {
       if (_instance == null)
       {
@@ -48,9 +42,10 @@ public class TimeTool extends Observable
 
 	public Task get(int index)
 	{
-		return (Task)rows.get(index);
+		return rows.get(index);
 	}
-	public void addRow(String number, String description)
+
+    public void addRow(String number, String description)
 	{
 		Task row = new Task(number, description, 0); 
 		rows.add(row); 		
@@ -103,9 +98,9 @@ public class TimeTool extends Observable
 		notifyObservers();
 	}
 	
-	public void adjustTime()
+	public void adjustTime(String initialValue)
 	{
-		if (getCurrentTask() == ResourceAutomation.getResourceString("NoActiveTask"))
+		if (getCurrentTask().equals(ResourceAutomation.getResourceString("NoActiveTask")))
 		{
 			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
 	    			ResourceAutomation.getResourceString("NoTaskSelected"),
@@ -113,17 +108,12 @@ public class TimeTool extends Observable
 	    			JOptionPane.DEFAULT_OPTION);
 			return; 
 		}
-		
-		JOptionPane dialog = new JOptionPane(); 
-		dialog.setOptionType(JOptionPane.OK_CANCEL_OPTION); 
 
-		String response = (String)JOptionPane.showInputDialog(
-				timeToolWindow.getFrame(), 
-				ResourceAutomation.getResourceString("AdjustMessage"), 
-				ResourceAutomation.getResourceString("AdjustTitle"), 
-				JOptionPane.PLAIN_MESSAGE);
-		
-		if (response != null)
+        AdjustTimeDialog dialog = new AdjustTimeDialog(timeToolWindow.getFrame(), initialValue);
+        dialog.setVisible(true);
+        dialog.dispose(); 
+        String response = dialog.getResponse();
+        if (response != null)
 		{
 			try
 			{
@@ -138,8 +128,9 @@ public class TimeTool extends Observable
 			}
 		}
 	}
-	
-	public void removeRowDialog()
+
+   
+    public void removeRowDialog()
 	{
     	JTable taskList = timeToolWindow.getTaskList(); 
 		if (taskList.getSelectedRow() > -1)
@@ -168,7 +159,7 @@ public class TimeTool extends Observable
 	}
 	public Object getValueAt(int row, int col) 
 	{ 
-		Task task = (Task)rows.get(row); 
+		Task task = rows.get(row);
 		if (col == 0)
 		{
 			return task.getId(); 
@@ -222,7 +213,7 @@ public class TimeTool extends Observable
     	
 		if (currentRow > -1)
 		{
-			Task task = (Task)rows.get(currentRow); 
+			Task task = rows.get(currentRow);
 			RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription()); 
 			dialog.setVisible(true); 
 			if (dialog.getResponse() == RenameDialog.OK)
@@ -236,7 +227,7 @@ public class TimeTool extends Observable
 			String id, 
 			String description)
 	{
-		Task task = (Task)rows.get(currentRow); 
+		Task task = rows.get(currentRow);
 		task.setId(id); 
 		task.setDescription(description); 
 		setChanged(); 
@@ -245,14 +236,12 @@ public class TimeTool extends Observable
 	public void reset()
 	{
 		currentRow = NO_ROW_SELECTED; 
-		TaskModel resetList = new TaskModel(); 
-		for (int x = 0; x < rows.size(); x++)
-		{
-			Task row = (Task)rows.get(x); 
-			row.setSeconds(0);  
-			resetList.add(row); 
-		}
-		rows = resetList; 
+		TaskModel resetList = new TaskModel();
+        for (Task row : rows) {
+            row.setSeconds(0);
+            resetList.add(row);
+        }
+        rows = resetList;
 		setChanged(); 
 		notifyObservers();
 	}
@@ -278,9 +267,7 @@ public class TimeTool extends Observable
 			ErrorHandler.showError(timeToolWindow.getFrame(), e); 
 		}
     }
-    /**
-     * @param frame
-     */
+
     public void exportTaskList()
     {
     	TimePersistence data = new TimePersistence(); 
@@ -306,8 +293,7 @@ public class TimeTool extends Observable
 	public String getDefaultFilename(Date today)
 	{
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMd");
-		String filename = formatter.format(today) + ".csv";
-		return filename;
+        return formatter.format(today) + ".csv";
 	}
     
     public void tick()
@@ -323,7 +309,7 @@ public class TimeTool extends Observable
     	{
 	    	if ((currentTime != null) && (getTimerStartTime() != null))
 	    	{
-	    		Task task = (Task)rows.get(currentRow); 
+	    		Task task = rows.get(currentRow);
 		    	//update the selected task
 	    		long secondDifference = currentTime.getTime() - getTimerStartTime().getTime();
 	    		secondDifference = secondDifference / 1000; 
@@ -339,26 +325,20 @@ public class TimeTool extends Observable
     }
     public String getTotalMinutes()
     {
-    	int totalMinutes = 0;  
-		for (int x = 0; x < rows.size(); x++)
-		{
-			Task row = (Task)rows.get(x); 
-			Integer rowMinutes = new Integer(row.getMinutes()); 
-			totalMinutes = totalMinutes + rowMinutes.intValue(); 
-		}
-    	return new Integer(totalMinutes).toString(); 
+    	int totalMinutes = 0;
+        for (Task row : rows) {
+            totalMinutes += new Integer(row.getMinutes());
+        }
+        return Integer.toString(totalMinutes);
     }
     public String getTotalHours()
     {
-    	float totalHours = 0;  
-		for (int x = 0; x < rows.size(); x++)
-		{
-			Task row = (Task)rows.get(x); 
-			Float rowHours = new Float(row.getHours()); 
-			totalHours = totalHours + rowHours.floatValue(); 
-		}
+    	float totalHours = 0;
+        for (Task row : rows) {
+            totalHours += new Float(row.getHours());
+        }
 
-    	return Task.formatHours(new Float(totalHours).toString()); 
+        return Task.formatHours(Float.toString(totalHours));
     }
     public void setCurrentRow(int index)
     {
@@ -387,7 +367,7 @@ public class TimeTool extends Observable
     	{
     		return ResourceAutomation.getResourceString("NoActiveTask"); 
     	}
-    	Task row = (Task)rows.get(currentRow);
+    	Task row = rows.get(currentRow);
     	return row.getDescription(); 
     }
     public void adjust(String adjustment) throws Exception
@@ -399,8 +379,7 @@ public class TimeTool extends Observable
 	    	if (adjustment.length() > 1)
 	    	{
 	    		prefix = adjustment.substring(0,1); 
-	    		if ((prefix.equals("+") == false) && 
-	    			(prefix.equals("-") == false))
+	    		if ((!prefix.equals("+")) && (!prefix.equals("-")))
 	    		{
 	    			prefix = ""; 
 	    		}
@@ -441,8 +420,7 @@ public class TimeTool extends Observable
 		}
 		catch (Exception e)
 		{
-			Exception invalid = new Exception(ResourceAutomation.getResourceString("NumericOnly")); 
-			throw invalid; 
+            throw new Exception(ResourceAutomation.getResourceString("NumericOnly"));
 		}
 	}
 	public void options()
@@ -450,14 +428,12 @@ public class TimeTool extends Observable
 		OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame()); 
 		dialog.setVisible(true); 
 	}
-	/**
-	 * @param args
-	 */
+
 	public static void main(String[] args)
 	{
 		try
 		{
-			timeToolWindow = new TimeToolWindow();
+			timeToolWindow = new TimeToolWindow(KeyboardFocusManager.getCurrentKeyboardFocusManager());
 			timeToolWindow.show(); 
 	    }
 		catch (Exception e)
