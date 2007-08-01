@@ -36,11 +36,12 @@ TimeTool allows you to pull task and description lists from a MySQL database.
   # Check the enabled checkbox
   # Click OK 
 
-<img src="http://www.hamletdarcy.com/timetool/MySQLOptions.GIF">
+http://www.hamletdarcy.com/timetool/MySQLOptions.png
 
 = Options Screen =
 
 Once configured, the add task dialog will contain two
 drop down lists instead of free form text entry.
 Add Task 
+
 
