@@ -1,21 +1,24 @@
 package com.timeTool.actions;
 
+import com.timeTool.TimeTool;
+
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import com.timeTool.TimeTool;
-
 public class AboutAction extends AbstractAction
 {
 	public static final String aboutAction    = "about";
-    public AboutAction() 
+	private final TimeTool controller;
+
+	public AboutAction(TimeTool controller)
 	{
-	    super(aboutAction);
+		super(aboutAction);
+		this.controller = controller;
 	}
     public void actionPerformed(ActionEvent e) 
     {
-    	TimeTool.getInstance().about(); 
+    	controller.about();
 	}
 
 

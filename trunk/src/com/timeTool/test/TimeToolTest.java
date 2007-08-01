@@ -9,12 +9,12 @@ import junit.framework.TestCase;
 
 public class TimeToolTest extends TestCase
 {
-	TimeTool data = TimeTool.getInstance(); 
+	TimeTool data = new TimeTool();
 
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		TimePersistence file = new TimePersistence(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 		data.setCurrentRow(-1); 
 	}
@@ -76,14 +76,6 @@ public class TimeToolTest extends TestCase
 		assertEquals(10, data.getRowCount()); 		
 	}
 
-	 public void testGetTotalMinutes()
-	 {
-		 assertEquals("519", data.getTotalMinutes()); 
-	 }
-	 public void testGetTotalHours()
-	 {
-		 assertEquals("8.65", data.getTotalHours()); 
-	 }
 	 public void testRowSelection()
 	 {
 		 assertEquals(ResourceAutomation.getResourceString("NoActiveTask"), data.getCurrentTask()); 

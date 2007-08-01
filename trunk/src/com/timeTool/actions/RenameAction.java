@@ -1,26 +1,26 @@
 package com.timeTool.actions;
 
-import java.awt.event.ActionEvent;
-import javax.swing.*;
-
 import com.timeTool.TimeTool;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 
 
 public class RenameAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -7039626610182345324L;
-	public static final String renameAction   = "rename";  
+	public static final String renameAction   = "rename";
+	private final TimeTool controller;
 
-    public RenameAction() 
+
+	public RenameAction(TimeTool controller)
 	{
-	    super(renameAction);
+		super(renameAction);
+		this.controller = controller; 
 	}
     public void actionPerformed(ActionEvent e) 
     {
-    	TimeTool.getInstance().renameDialog(); 
+    	controller.renameDialog();
 	}
 
 }

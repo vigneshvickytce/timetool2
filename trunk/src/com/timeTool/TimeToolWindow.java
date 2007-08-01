@@ -42,55 +42,82 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.BorderFactory;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 
-public class TimeToolWindow extends JPanel implements Observer
+public final class TimeToolWindow extends JPanel implements Observer
 {
 	private JTable taskList;
     private TaskTable dataTable; 
 	private static JFrame frame;   
     
-    protected Action[] defaultActions = {
-    			 new StopAction(),
-    			 new AboutAction(),
-    			 new AdjustAction(),
-    			 new ResetAction(),
-	       	 	 new ReloadAction(),
-    	       	 new SaveAction(), 
-    	       	 new ExportAction(), 
-    	       	 new AddAction(),
-    	    	 new DeleteAction(),
-    	    	 new RenameAction(),
-    	         new QuitAction(),
-    	         new HelpAction(), 
-    	         new OptionsAction() , 
-    	         new LicenseAction(), 
-    	         new HomePageAction(), 
-    	         new SupportAction()
-    	    };
 	private static WindowsTrayIcon trayIcon;
+	private final ResourceAutomation resources;
+	private final TimeTool controller;
 
-    TimeToolWindow() {
-    	super(true);
-    	TimeTool.resources = new ResourceAutomation(this); 
-    	TimeTool.resources.setLookAndFeel();
-    	TimeTool.resources.createCommandTable();
 
-    	dataTable = new TaskTable(); 
-    	createTaskList();
-    	JScrollPane scroller = enableScrolling();
-    	initPanel(scroller);
-    	TimeTool.resources.createMenubar(); 
-    	TimeTool.getInstance().addObserver(this); 
+	TimeToolWindow(ResourceAutomation resources, TimeTool controller) {
+		super(true);
 
-    	createTrayIcon();
-        createKeyHandler();
-    }
 
-    private void createKeyHandler() {
-        final AdjustTimeKeyHandler adjustTimeKeyHandler = new AdjustTimeKeyHandler(TimeTool.getInstance());
+		setLookAndFeel();
+		this.resources = resources;
+		this.controller = controller;
+
+		resources.createCommandTable(new Action[]{
+    			 new StopAction(controller),
+    			 new AboutAction(controller),
+    			 new AdjustAction(controller),
+    			 new ResetAction(controller),
+	       	 	 new ReloadAction(controller),
+    	       	 new SaveAction(controller),
+    	       	 new ExportAction(controller),
+    	       	 new AddAction(controller),
+    	    	 new DeleteAction(controller),
+    	    	 new RenameAction(controller),
+    	         new QuitAction(),
+    	         new HelpAction(),
+    	         new OptionsAction(controller) ,
+    	         new LicenseAction(),
+    	         new HomePageAction(),
+    	         new SupportAction()
+    	    });
+
+		dataTable = new TaskTable(controller);
+		createTaskList();
+		final JScrollPane scroller = enableScrolling();
+		initPanel(scroller);
+		resources.createMenubar();
+
+		createTrayIcon();
+		createKeyHandler(controller);
+		controller.addObserver(this);
+	}
+
+	private void setLookAndFeel()
+	{
+		// Force SwingSet to come up in the Cross Platform L&F
+    	try
+    	{
+    	    //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    	    // If you want the System L&F instead, comment out the above line and
+    	    // uncomment the following:
+    	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    	}
+    	catch (Exception exc)
+    	{
+    	    System.err.println("Error loading L&F: " + exc);
+    	    ErrorHandler.showError(null, exc);
+    	}
+    	setBorder(BorderFactory.createEtchedBorder());
+    	setLayout(new BorderLayout());
+	}
+
+	private void createKeyHandler(final TimeTool controller) {
+        final AdjustTimeKeyHandler adjustTimeKeyHandler = new AdjustTimeKeyHandler(controller);
         char[] adjustKeys = new char[]{'+', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 
         for (final char key : adjustKeys) {
@@ -104,14 +131,14 @@ public class TimeToolWindow extends JPanel implements Observer
 
 		registerKeyboardAction(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {
-					int row = TimeTool.getInstance().getCurrentRow();
-					TimeTool.getInstance().setCurrentRow(--row);
+					int row = controller.getCurrentRow();
+					controller.setCurrentRow(--row);
                 }
             }, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 		registerKeyboardAction(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {
-					int row = TimeTool.getInstance().getCurrentRow();
-					TimeTool.getInstance().setCurrentRow(++row);
+					int row = controller.getCurrentRow();
+					controller.setCurrentRow(++row);
 				}
             }, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -121,10 +148,10 @@ public class TimeToolWindow extends JPanel implements Observer
 	{
     	JPanel panel = new JPanel();
     	panel.setLayout(new BorderLayout());	
-    	panel.add("North",TimeTool.resources.createToolbar());
+    	panel.add("North",resources.createToolbar());
     	panel.add("Center", scroller);
     	add("Center", panel);
-    	StatusBar statusBar = new StatusBar(); 
+    	StatusBar statusBar = new StatusBar(controller);
     	add("South", statusBar);
 	}
 
@@ -138,24 +165,24 @@ public class TimeToolWindow extends JPanel implements Observer
 	
 	private void createTaskList()
 	{
-		TimePersistence data = new TimePersistence(); 
-		data.loadFile(TimeTool.getInstance()); 
+		TimePersistence data = new TimePersistence(controller);
+		data.loadFile(controller);
 		taskList = new JTable(dataTable); 
 		taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		taskList.setColumnSelectionAllowed(false); 
     	taskList.setShowVerticalLines(false); 
     	taskList.setShowHorizontalLines(false);
-		trapTableClick();
+		trapTableClick(controller);
     	trapColumnClick(); 
 	}
 	
 	private void trapColumnClick()
 	{
 		JTableHeader header = taskList.getTableHeader();
-	    header.addMouseListener(new ColumnHeaderListener());	    
+	    header.addMouseListener(new ColumnHeaderListener(controller));
 	}
 	
-	private void trapTableClick()
+	private void trapTableClick(final TimeTool controller)
 	{
 		//Ask to be notified of selection changes.
     	ListSelectionModel rowSM = taskList.getSelectionModel();
@@ -170,7 +197,7 @@ public class TimeToolWindow extends JPanel implements Observer
     	        if (!lsm.isSelectionEmpty())
     	        {
     	            int selectedRow = lsm.getMinSelectionIndex();
-    	            TimeTool.getInstance().setCurrentRow(selectedRow); 
+					controller.setCurrentRow(selectedRow);
     	        }
     	    }
     	});
@@ -190,9 +217,9 @@ public class TimeToolWindow extends JPanel implements Observer
 			frame.setBackground(Color.lightGray);
 			frame.getContentPane().setLayout(new BorderLayout());
 			frame.getContentPane().add("Center", this);
-		    frame.setJMenuBar(TimeTool.resources.getMenubar());
-			frame.addWindowListener(new WindowEventHandler());
-			frame.setIconImage(new ImageIcon(TimeTool.resources.getResource("IconImage")).getImage());
+		    frame.setJMenuBar(resources.getMenubar());
+			frame.addWindowListener(new WindowEventHandler(controller));
+			frame.setIconImage(new ImageIcon(resources.getResource("IconImage")).getImage());
 			frame.pack();
 			frame.setSize(500, 300);
 
@@ -212,11 +239,7 @@ public class TimeToolWindow extends JPanel implements Observer
 		return dataTable; 
 	}
 
-    public Action[] getActions()
-    {
-    	return defaultActions; 
-    }
-    public JTable getTaskList()
+	public JTable getTaskList()
     {
     	return taskList;     	
     }
@@ -225,7 +248,7 @@ public class TimeToolWindow extends JPanel implements Observer
 	public void update(Observable arg0, Object arg1)
 	{
     	taskList.repaint(); 
-    	int currentRow = TimeTool.getInstance().getCurrentRow(); 
+    	int currentRow = controller.getCurrentRow();
     	if (currentRow == TimeTool.NO_ROW_SELECTED)
     	{
     		taskList.clearSelection(); 
@@ -264,16 +287,24 @@ public class TimeToolWindow extends JPanel implements Observer
             frame.setVisible(true);
             frame.toFront();
             frame.requestFocus();
-            trayIcon.setVisible(false);
+			trayIcon.setVisible(false);
         }
     }
 
 	protected static final class WindowEventHandler extends WindowAdapter
     {
-        public void windowClosing(WindowEvent e) 
+		private final TimeTool controller;
+
+
+		public WindowEventHandler(TimeTool controller) {
+			this.controller = controller;
+		}
+
+
+		public void windowClosing(WindowEvent e)
         {
         	WindowsTrayIcon.cleanUp();
-        	TimeTool.getInstance().close();
+			controller.close();
         }
 
         public void windowIconified(WindowEvent e)

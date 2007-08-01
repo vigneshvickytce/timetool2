@@ -3,9 +3,7 @@ package com.timeTool;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 
 public class TimePersistence extends FilePersistence
@@ -14,52 +12,60 @@ public class TimePersistence extends FilePersistence
 	public static final String CURRENT_TIME_TAG = "current_time";
 
 	private ExportVisitor formatter;
-	public TimeTool loadFile(TimeTool data) 
+	private final TimeTool controller;
+
+
+	public TimePersistence(TimeTool controller) {
+		this.controller = controller;
+	}
+
+
+	public TimeTool loadFile(TimeTool data)
 	{
 		//remove all the old entries...
-		data.clear(); 
-		
+		data.clear();
+
 		try
 		{
 			BufferedReader file = new BufferedReader(new FileReader(TXTVisitor.DATA_FILE));
-			String record = file.readLine();  
-			String currentTime = null; 
-			String timeZone = null; 
-			   
+			String record = file.readLine();
+			String currentTime = null;
+			String timeZone = null;
+
 			while (record != null)
 			{
 				if (record.length() == 59)
 				{
-					String id = record.substring(0, 8); 
-					id = id.trim(); 
-					
+					String id = record.substring(0, 8);
+					id = id.trim();
+
 					String description = record.substring(8, 48);
-					description = description.trim(); 
-					
+					description = description.trim();
+
 					String minutesAsString = record.substring(48, 52);
-					minutesAsString = minutesAsString.trim(); 
-					Integer minutes = new Integer(minutesAsString); 
-					
-					data.addRow(id, description, minutes); 
+					minutesAsString = minutesAsString.trim();
+					Integer minutes = new Integer(minutesAsString);
+
+					data.addRow(id, description, minutes);
 				}
-				else 
+				else
 				{
 					//perhaps this is the current row tag
-					int index = record.indexOf(CURRENT_ROW_TAG); 
+					int index = record.indexOf(CURRENT_ROW_TAG);
 					if (index == 1)
 					{
 						//this is the current row tag
-						String currentRow = extractFromTag(record, CURRENT_ROW_TAG); 
-						Integer row = new Integer(currentRow); 
-						data.setCurrentRow(row.intValue()); 
+						String currentRow = extractFromTag(record, CURRENT_ROW_TAG);
+						Integer row = new Integer(currentRow);
+						data.setCurrentRow(row.intValue());
 					}
 					else if (record.indexOf(CURRENT_TIME_TAG) == 1)
 					{
 
 						currentTime = extractFromTag(record, CURRENT_TIME_TAG);
-			   			long seconds = new Long(currentTime).longValue(); 
-			   			Date startTime = new Date(seconds); 
-			   			TimeTool.getInstance().setStartTime(startTime); 
+						   long seconds = new Long(currentTime).longValue();
+						   Date startTime = new Date(seconds);
+						   controller.setStartTime(startTime);
 					}
 				}
 				record = file.readLine();
@@ -70,13 +76,13 @@ public class TimePersistence extends FilePersistence
 		catch (Exception e)
 		{
 			//do nothing, exceptions are OK here
-		} 
-		 
-		return data; 
+		}
+
+		return data;
 	}
 	public void saveFile(TimeTool data, String path) throws Exception
 	{
-		formatter = new TXTVisitor();
+		formatter = new TXTVisitor(controller);
 		export(data, path); 		
 	}
 	private void writeRecord(PrintWriter file, Task record)
@@ -103,7 +109,7 @@ public class TimePersistence extends FilePersistence
 	private void export(TimeTool data, String path) throws Exception
 	{
 		PrintWriter file = createWriter(path);
-		TaskIterator iterator = new TaskIterator(); 
+		TaskIterator iterator = new TaskIterator(controller); 
 		
 		file.write(formatter.getHeader()); 
 		Task record = iterator.getFirst(); 

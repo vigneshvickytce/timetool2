@@ -12,34 +12,24 @@ public class TimeTool extends Observable
 {
 	public static final int NO_ROW_SELECTED = -1;
 
-	private static TimeTool _instance;	//singleton
-	private TaskModel rows; 
+	private TaskModel rows;
 	private Date currentTime;
 	private Date startTime; 
 	private int currentRow;
-    public static ResourceAutomation resources;
+    public static ResourceAutomation resources  = new ResourceAutomation();
 	private static TimeToolWindow timeToolWindow; 
 
 	static {
     	ResourceAutomation.initResources(); 
     }
 
-    private TimeTool() {
+    public TimeTool() {
 		rows = new TaskModel(); 
 		currentRow = NO_ROW_SELECTED;
-		setStartTime(null); 
+		setStartTime(null);
+		new Timer(1000, new SecondTimer(this)).start();
 	}
     
-    public static TimeTool getInstance()
-    {
-      if (_instance == null)
-      {
-    	  _instance = new TimeTool();
-    	  new Timer(1000, new SecondTimer()).start();
-      }
-   	  return _instance;
-    }
-
 	public Task get(int index)
 	{
 		return rows.get(index);
@@ -250,17 +240,17 @@ public class TimeTool extends Observable
     public void reloadTaskList()
     {
 		currentRow = NO_ROW_SELECTED; 
-		TimePersistence data = new TimePersistence(); 
+		TimePersistence data = new TimePersistence(this);
 		data.loadFile(this);
 		setChanged(); 
 		notifyObservers();
     }
     public void saveTaskList()
     {
-    	TimePersistence data = new TimePersistence(); 
+    	TimePersistence data = new TimePersistence(this);
 		try
 		{
-			data.saveFile(_instance, TXTVisitor.DATA_FILE);
+			data.saveFile(this, TXTVisitor.DATA_FILE);
 		}
 		catch (Exception e)
 		{
@@ -270,7 +260,7 @@ public class TimeTool extends Observable
 
     public void exportTaskList()
     {
-    	TimePersistence data = new TimePersistence(); 
+    	TimePersistence data = new TimePersistence(this);
     	FileDialog fileDialog = new FileDialog(timeToolWindow.getFrame(), "TimeTool - Export to CSV"); 
     	fileDialog.setMode(FileDialog.SAVE); 
     	Date today = new Date(); 
@@ -433,7 +423,7 @@ public class TimeTool extends Observable
 	{
 		try
 		{
-			timeToolWindow = new TimeToolWindow();
+			timeToolWindow = new TimeToolWindow(resources, new TimeTool());
 			timeToolWindow.show(); 
 	    }
 		catch (Exception e)

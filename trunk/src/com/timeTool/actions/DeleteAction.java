@@ -1,26 +1,26 @@
 package com.timeTool.actions;
 
-import java.awt.event.ActionEvent;
-import javax.swing.*;
-
 import com.timeTool.TimeTool;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 
 
 public class DeleteAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 6161942866196776011L;
-	public static final String deleteAction   = "delete";  
+	public static final String deleteAction   = "delete";
+	private TimeTool controller; 
 
-    public DeleteAction() 
+
+	public DeleteAction(TimeTool controller)
 	{
-	    super(deleteAction);
+		super(deleteAction);
+		this.controller = controller;
 	}
     public void actionPerformed(ActionEvent e) 
     {
-    	TimeTool.getInstance().removeRowDialog(); 
+    	controller.removeRowDialog();
     	
     }
 

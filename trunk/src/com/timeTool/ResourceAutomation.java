@@ -1,6 +1,5 @@
 package com.timeTool;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Event;
@@ -17,7 +16,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -26,7 +24,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
 
 
 
@@ -35,8 +32,7 @@ public class ResourceAutomation
 {
     public static ResourceBundle resources;
     private JToolBar toolbar;
-    private TimeToolWindow owner; 
-    private Hashtable menuItems;
+    private Hashtable<String, JMenuItem> menuItems;
     private JMenuBar menubar;
     private static Hashtable<String, Action> commands;
     
@@ -63,30 +59,12 @@ public class ResourceAutomation
         }    
     }
     
-    public ResourceAutomation(TimeToolWindow owner)
+    public ResourceAutomation()
     {
     	super(); 
-    	this.owner = owner; 
-    	menuItems = new Hashtable();
+    	menuItems = new Hashtable<String, JMenuItem>();
     }
-	public void setLookAndFeel()
-	{
-		// Force SwingSet to come up in the Cross Platform L&F
-    	try 
-    	{
-    	    //UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-    	    // If you want the System L&F instead, comment out the above line and
-    	    // uncomment the following:
-    	    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    	} 
-    	catch (Exception exc) 
-    	{
-    	    System.err.println("Error loading L&F: " + exc);
-    	    ErrorHandler.showError(null, exc); 
-    	}
-    	owner.setBorder(BorderFactory.createEtchedBorder());
-    	owner.setLayout(new BorderLayout());
-	}
+
     /**
      * Create the toolbar.  By default this reads the 
      * resource file for the definition of the toolbar.
@@ -170,7 +148,7 @@ public class ResourceAutomation
      */
     public String[] tokenize(String input) 
     {
-		Vector v = new Vector();
+		Vector<String> v = new Vector<String>();
 		StringTokenizer t = new StringTokenizer(input);
 		String cmd[];
 	
@@ -181,7 +159,7 @@ public class ResourceAutomation
 		cmd = new String[v.size()];
 		for (int i = 0; i < cmd.length; i++)
 		{
-			cmd[i] = (String) v.elementAt(i);
+			cmd[i] = v.elementAt(i);
 		}
 	
 		return cmd;
@@ -203,7 +181,7 @@ public class ResourceAutomation
 
 
     public Action getAction(String cmd) {
-    	return (Action) commands.get(cmd);
+    	return commands.get(cmd);
     }
 
     public URL getResource(String key) 
@@ -211,8 +189,7 @@ public class ResourceAutomation
 		String name = getResourceString(key);
 		if (name != null) 
 		{
-		    URL url = owner.getClass().getResource(name);
-		    return url;
+			return getClass().getResource(name);
 		}
 		return null;
     }
@@ -226,14 +203,12 @@ public class ResourceAutomation
     	JMenuBar mb = new JMenuBar();
 
     	String[] menuKeys = tokenize(getResourceString("menubar"));
-    	for (int i = 0; i < menuKeys.length; i++) 
-    	{
-    	    JMenu m = createMenu(menuKeys[i]);
-    	    if (m != null) 
-    	    {
-    	    	mb.add(m);
-    	    }
-    	}
+		for (String menuKey : menuKeys) {
+			JMenu m = createMenu(menuKey);
+			if (m != null) {
+				mb.add(m);
+			}
+		}
      	this.menubar = mb;
     	return mb;
      }
@@ -245,17 +220,13 @@ public class ResourceAutomation
     {
 		String[] itemKeys = tokenize(getResourceString(key));
 		JMenu menu = new JMenu(getResourceString(key + "Label"));
-		for (int i = 0; i < itemKeys.length; i++) 
-		{
-		    if (itemKeys[i].equals("-")) 
-		    {
-		    	menu.addSeparator();
-		    } 
-		    else 
-		    {
-				JMenuItem mi = createMenuItem(itemKeys[i]);
+		for (String itemKey : itemKeys) {
+			if (itemKey.equals("-")) {
+				menu.addSeparator();
+			} else {
+				JMenuItem mi = createMenuItem(itemKey);
 				menu.add(mi);
-		    }
+			}
 		}
 		return menu;
     }
@@ -387,16 +358,14 @@ public class ResourceAutomation
     }
 
 
-	public void createCommandTable()
+	public void createCommandTable(Action[] actions)
 	{
 		// install the command table
     	commands = new Hashtable<String, Action>();
-    	for (int i = 0; i < owner.getActions().length; i++) 
-    	{
-    	    Action action = owner.getActions()[i];
-    	    //commands.put(a.getText(Action.NAME), a);
-    	    commands.put((String) action.getValue(Action.NAME), action);
-    	}
+		for (Action action : actions) {
+			//commands.put(a.getText(Action.NAME), a);
+			commands.put((String)action.getValue(Action.NAME), action);
+		}
 	}
 
 }

@@ -10,12 +10,13 @@ import junit.framework.TestCase;
 
 public class TaskModelTest extends TestCase
 {
-	TimeTool data = TimeTool.getInstance(); 
+	private TimeTool data;
 
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		TimePersistence file = new TimePersistence(); 
+		data = new TimeTool(); 
+		TimePersistence file = new TimePersistence(data);
 		file.loadFile(data); 
 	}
 

@@ -1,23 +1,24 @@
 package com.timeTool.actions;
 
-import java.awt.event.ActionEvent;
-import javax.swing.AbstractAction;
 import com.timeTool.TimeTool;
+
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
 
 public class OptionsAction  extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1068951283732409180L;
-	public static final String optionsAction  = "options"; 
+	public static final String optionsAction  = "options";
+	private final TimeTool controller;
 
-    public OptionsAction() 
+
+	public OptionsAction(TimeTool controller)
 	{
-	    super(optionsAction);
+		super(optionsAction);
+		this.controller = controller; 
 	}
     public void actionPerformed(ActionEvent e) 
     {
-    	TimeTool.getInstance().options();  
+    	controller.options();
 	}
 }

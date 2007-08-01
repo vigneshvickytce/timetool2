@@ -1,8 +1,9 @@
 package com.timeTool.test;
 
+import com.timeTool.actions.AdjustTimeKeyHandlerTest;
+
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import com.timeTool.actions.AdjustTimeKeyHandlerTest;
 
 /**
  * Run all the tests
