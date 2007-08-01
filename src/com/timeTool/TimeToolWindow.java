@@ -3,10 +3,7 @@ package com.timeTool;
 import java.util.Observable;
 import java.util.Observer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -18,10 +15,6 @@ import com.timeTool.actions.*;
 
 public class TimeToolWindow extends JPanel implements Observer
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = -6654068246804919729L;
 	private JTable taskList;
     private TaskTable dataTable; 
 	private static JFrame frame;   
@@ -45,10 +38,8 @@ public class TimeToolWindow extends JPanel implements Observer
     	         new SupportAction()
     	    };
 	private static WindowsTrayIcon trayIcon;
-   
 
-    TimeToolWindow()
-    {
+    TimeToolWindow(KeyboardFocusManager keyboardManager) {
     	super(true);
     	TimeTool.resources = new ResourceAutomation(this); 
     	TimeTool.resources.setLookAndFeel();
@@ -62,9 +53,23 @@ public class TimeToolWindow extends JPanel implements Observer
     	TimeTool.getInstance().addObserver(this); 
 
     	createTrayIcon();
+        createKeyHandler();
     }
-    
-	private void initPanel(JScrollPane scroller)
+
+    private void createKeyHandler() {
+        final AdjustTimeKeyHandler adjustTimeKeyHandler = new AdjustTimeKeyHandler(TimeTool.getInstance());
+        char[] adjustKeys = new char[]{'+', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+
+        for (final char key : adjustKeys) {
+            registerKeyboardAction(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {
+                    adjustTimeKeyHandler.perform(key);
+                }
+            }, KeyStroke.getKeyStroke(key), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }
+    }
+
+    private void initPanel(JScrollPane scroller)
 	{
     	JPanel panel = new JPanel();
     	panel.setLayout(new BorderLayout());	
@@ -114,7 +119,7 @@ public class TimeToolWindow extends JPanel implements Observer
     	        if (arg0.getValueIsAdjusting()) return;
 
     	        ListSelectionModel lsm = (ListSelectionModel)arg0.getSource();
-    	        if (lsm.isSelectionEmpty() == false) 
+    	        if (!lsm.isSelectionEmpty())
     	        {
     	            int selectedRow = lsm.getMinSelectionIndex();
     	            TimeTool.getInstance().setCurrentRow(selectedRow); 
@@ -127,9 +132,7 @@ public class TimeToolWindow extends JPanel implements Observer
 	{
 		return frame; 
 	}
-	/**
-	 * @param args
-	 */
+
 	public void show()
 	{
 		try
@@ -208,40 +211,33 @@ public class TimeToolWindow extends JPanel implements Observer
 	// Callback listener for hide button
 	private class RestoreListener implements ActionListener 
 	{
-		public void actionPerformed(ActionEvent evt) 
-		{
-			restoreFrame();
-		}
-		private void restoreFrame()
-		{
-			frame.setState(Frame.NORMAL); 
-			frame.setVisible(true);
-			frame.toFront(); 
-			frame.requestFocus();
-			trayIcon.setVisible(false);
-		}
+		public void actionPerformed(ActionEvent evt) {
+            frame.setState(Frame.NORMAL);
+            frame.setVisible(true);
+            frame.toFront();
+            frame.requestFocus();
+            trayIcon.setVisible(false);
+        }
+    }
 
-
-	}
-
-	protected static final class WindowEventHandler extends WindowAdapter 
+	protected static final class WindowEventHandler extends WindowAdapter
     {
         public void windowClosing(WindowEvent e) 
         {
         	WindowsTrayIcon.cleanUp();
-        	TimeTool.getInstance().close(); 
+        	TimeTool.getInstance().close();
         }
-        public void windowIconified(WindowEvent e) 
+
+        public void windowIconified(WindowEvent e)
         {
 			String osName = System.getProperty("os.name");
-			if ((osName.startsWith("Windows")) || osName.startsWith("Mac OS"))
-            {
+			if ((osName.startsWith("Windows")) || osName.startsWith("Mac OS")) {
 				frame.setVisible(false);
 				trayIcon.setVisible(true);
             }
         }
 
     }
-    
+
 
 }

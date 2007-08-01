@@ -8,10 +8,6 @@ import com.timeTool.TimeTool;
 
 public class AboutAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 2237459285069603148L;
 	public static final String aboutAction    = "about";
     public AboutAction() 
 	{
