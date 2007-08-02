@@ -27,6 +27,7 @@ public class AllTests
 	{
 		TestSuite suite = new TestSuite("Test for timeTool");
 		//$JUnit-BEGIN$
+        suite.addTestSuite(TaskModelTest.class);
         suite.addTestSuite(AdjustTimeKeyHandlerTest.class);
         suite.addTestSuite(TimeToolTest.class);
 		suite.addTestSuite(TaskTest.class);

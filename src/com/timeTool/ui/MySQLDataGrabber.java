@@ -1,4 +1,9 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.ui.AddTaskDialog;
+import com.timeTool.ui.CommonDialog;
+import com.timeTool.ResourceAutomation;
+import com.timeTool.ErrorHandler;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -228,7 +233,7 @@ public class MySQLDataGrabber implements OptionsPlugin
 						}
 						catch (Exception e)
 						{
-							ErrorHandler.showError(null, e); 
+							ErrorHandler.showError(null, e);
 						} 
 					}
 				});

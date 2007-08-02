@@ -1,4 +1,4 @@
-package com.timeTool;
+package com.timeTool.ui;
 
 import com.jeans.trayicon.WindowsTrayIcon;
 import com.timeTool.actions.AboutAction;
@@ -18,6 +18,7 @@ import com.timeTool.actions.ResetAction;
 import com.timeTool.actions.SaveAction;
 import com.timeTool.actions.StopAction;
 import com.timeTool.actions.SupportAction;
+import com.timeTool.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -51,7 +52,7 @@ import javax.swing.table.JTableHeader;
 public final class TimeToolWindow extends JPanel implements Observer
 {
 	private JTable taskList;
-    private TaskTable dataTable; 
+    private TaskTable dataTable;
 	private static JFrame frame;   
     
 	private static WindowsTrayIcon trayIcon;
@@ -59,7 +60,7 @@ public final class TimeToolWindow extends JPanel implements Observer
 	private final TimeTool controller;
 
 
-	TimeToolWindow(ResourceAutomation resources, TimeTool controller) {
+	public TimeToolWindow(ResourceAutomation resources, TimeTool controller) {
 		super(true);
 
 
@@ -166,7 +167,7 @@ public final class TimeToolWindow extends JPanel implements Observer
 	private void createTaskList()
 	{
 		TimePersistence data = new TimePersistence(controller);
-		data.loadFile(controller);
+		data.loadFile();
 		taskList = new JTable(dataTable); 
 		taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		taskList.setColumnSelectionAllowed(false); 

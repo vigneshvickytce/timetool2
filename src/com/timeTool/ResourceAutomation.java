@@ -198,7 +198,7 @@ public class ResourceAutomation
     	return toolbar;
     }
 
-    protected JMenuBar createMenubar()
+    public JMenuBar createMenubar()
     {
     	JMenuBar mb = new JMenuBar();
 

@@ -1,79 +1,50 @@
 package com.timeTool;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 public class TaskModel extends ArrayList<Task>
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -5718562040056751624L;
 
 	private boolean ascending = true; 
 	private int sortColumn = 0; 
-	
-	public TaskModel()
-	{
+    private static final Map<Integer, Comparator<Task>> ascendingSortMap = new HashMap<Integer, Comparator<Task>>();
+    private static final Map<Integer, Comparator<Task>> descendingSortMap = new HashMap<Integer, Comparator<Task>>();
+
+    static {
+        ascendingSortMap.put(TaskSort.ID_SORT, TaskSort.ID_ASC);
+        ascendingSortMap.put(TaskSort.DESCRIPTION_SORT, TaskSort.DESCRIPTION_ASC);
+        ascendingSortMap.put(TaskSort.MINUTES_SORT, TaskSort.MINUTES_ASC);
+        ascendingSortMap.put(TaskSort.HOURS_SORT, TaskSort.HOURS_ASC);
+
+        descendingSortMap.put(TaskSort.ID_SORT, TaskSort.ID_DESC);
+        descendingSortMap.put(TaskSort.DESCRIPTION_SORT, TaskSort.DESCRIPTION_DESC);
+        descendingSortMap.put(TaskSort.MINUTES_SORT, TaskSort.MINUTES_DESC);
+        descendingSortMap.put(TaskSort.HOURS_SORT, TaskSort.HOURS_DESC); 
+    }
+
+    public TaskModel() {
 		super(); 
 	}
 
-	public void sort(int index)
-	{
-		if (indexOutOfRange(index)) 
-		{
+	public void sort(int index) {
+		if (indexOutOfRange(index)) {
 			return;
 		}
 
-		if (sortColumn == index)
-		{
+		if (sortColumn == index) {
 			ascending = !ascending; 
 		}
 		sortColumn = index; 
 		
-		if (ascending)
-		{
-			if (sortColumn == TaskSort.ID_SORT)
-			{
-				Collections.sort(this, TaskSort.ID_ASC); 
-			}
-			else if (sortColumn == TaskSort.DESCRIPTION_SORT)
-			{
-				Collections.sort(this, TaskSort.DESCRIPTION_ASC); 
-			}
-			else if (sortColumn == TaskSort.MINUTES_SORT)
-			{
-				Collections.sort(this, TaskSort.MINUTES_ASC); 
-			}
-			else if (sortColumn == TaskSort.HOURS_SORT)
-			{
-				Collections.sort(this, TaskSort.HOURS_ASC); 
-			}
-		}
-		else
-		{
-			if (sortColumn == TaskSort.ID_SORT)
-			{
-				Collections.sort(this, TaskSort.ID_DESC); 
-			}
-			else if (sortColumn == TaskSort.DESCRIPTION_SORT)
-			{
-				Collections.sort(this, TaskSort.DESCRIPTION_DESC); 
-			}
-			else if (sortColumn == TaskSort.MINUTES_SORT)
-			{
-				Collections.sort(this, TaskSort.MINUTES_DESC); 
-			}
-			else if (sortColumn == TaskSort.HOURS_SORT)
-			{
-				Collections.sort(this, TaskSort.HOURS_DESC); 
-			}
+		if (ascending) {
+            Collections.sort(this, ascendingSortMap.get(sortColumn));
+		} else {
+            Collections.sort(this, descendingSortMap.get(sortColumn));
 		}
 	}
 
 
-	private boolean indexOutOfRange(int index)
-	{
+	private boolean indexOutOfRange(int index) {
 		return (index < 0) || (index > 3);
 	}
 	

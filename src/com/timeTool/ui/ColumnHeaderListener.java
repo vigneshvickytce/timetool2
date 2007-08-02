@@ -1,4 +1,6 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.TimeTool;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

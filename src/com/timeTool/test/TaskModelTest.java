@@ -1,7 +1,5 @@
 package com.timeTool.test;
 
-import java.util.Collections;
-
 import com.timeTool.Task;
 import com.timeTool.TimePersistence;
 import com.timeTool.TimeTool;
@@ -17,7 +15,7 @@ public class TaskModelTest extends TestCase
 		super.setUp();
 		data = new TimeTool(); 
 		TimePersistence file = new TimePersistence(data);
-		file.loadFile(data); 
+		file.loadFile();
 	}
 
 	/*

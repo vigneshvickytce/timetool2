@@ -1,10 +1,8 @@
 package com.timeTool.test;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import com.timeTool.MySQLDataGrabber;
-import com.timeTool.OptionsDialog;
+import com.timeTool.ui.MySQLDataGrabber;
 
 import junit.framework.TestCase;
 
@@ -13,7 +11,7 @@ public class MySQLDataGrabberTest extends TestCase
 
 	public void testGetTaskList() throws Exception
 	{
-		MySQLDataGrabber data = new MySQLDataGrabber(); 
+		MySQLDataGrabber data = new MySQLDataGrabber();
 		ArrayList descriptions = data.getDescriptionList("C-ANDE02-BAYP-01");
 		assertEquals(2, descriptions.size());
 		String[] desc = (String[])descriptions.get(1); 

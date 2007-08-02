@@ -3,12 +3,9 @@ package com.timeTool.test;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.timeTool.ExportOptions;
-import com.timeTool.ResourceAutomation;
 import com.timeTool.TXTVisitor;
 import com.timeTool.Task;
 import com.timeTool.TimeTool;
@@ -41,7 +38,7 @@ public class TestFileIO extends TestCase
 	public void test1Load()
 	{
 		TimePersistence file = new TimePersistence(data);
-		file.loadFile(data); 
+		file.loadFile();
 		assertEquals(10, data.getRowCount()); 
 		assertEquals("1", data.getValueAt(0,0)); 
 		assertEquals("Anderson - Billed", data.getValueAt(0,1)); 
@@ -57,7 +54,7 @@ public class TestFileIO extends TestCase
 	public void test2Delete()
 	{
 		TimePersistence file = new TimePersistence(data);
-		file.loadFile(data); 
+		file.loadFile();
 		assertEquals(10, data.getRowCount()); 
 		data.removeRow(9); 
 		assertEquals(9, data.getRowCount()); 
@@ -70,16 +67,16 @@ public class TestFileIO extends TestCase
 	public void test3Save() throws Exception
 	{
 		TimePersistence file = new TimePersistence(data);
-		file.loadFile(data); 
+		file.loadFile();
 
 		assertEquals(10, data.getRowCount()); 
 		data.removeRow(9); 
-		file.saveFile(data, TXTVisitor.DATA_FILE); 
-		file.loadFile(data); 
+		file.saveFile(TXTVisitor.DATA_FILE);
+		file.loadFile();
 		assertEquals(9, data.getRowCount()); 
 		data.addRow("3", "Z-PresAles", new Integer(21)); 
-		file.saveFile(data, TXTVisitor.DATA_FILE); 
-		file.loadFile(data); 
+		file.saveFile(TXTVisitor.DATA_FILE);
+		file.loadFile();
 		assertEquals(10, data.getRowCount()); 
 		
 	}
@@ -87,11 +84,11 @@ public class TestFileIO extends TestCase
 	public void test4Reload()
 	{
 		TimePersistence file = new TimePersistence(data);
-		file.loadFile(data); 
+		file.loadFile();
 
 		assertEquals(10, data.getRowCount()); 
 		data.removeRow(9); 
-		file.loadFile(data); 
+		file.loadFile();
 
 		assertEquals(10, data.getRowCount()); 
 	}
@@ -99,8 +96,8 @@ public class TestFileIO extends TestCase
 	public void test4Export()  throws Exception
 	{
 		TimePersistence filewriter = new TimePersistence(data);
-		filewriter.loadFile(data); 
-		filewriter.exportFile(data, TEST_CSV); 
+		filewriter.loadFile();
+		filewriter.exportFile(TEST_CSV);
 
 		BufferedReader file = new BufferedReader(new FileReader(TEST_CSV));
 		String headerRecord = file.readLine();  
@@ -118,8 +115,8 @@ public class TestFileIO extends TestCase
 		options.serialize(); 
 		
 		TimePersistence filewriter = new TimePersistence(data);
-		filewriter.loadFile(data); 
-		filewriter.exportFile(data, TEST_CSV); 
+		filewriter.loadFile();
+		filewriter.exportFile(TEST_CSV);
 
 		BufferedReader file = new BufferedReader(new FileReader(TEST_CSV));
 
@@ -134,7 +131,7 @@ public class TestFileIO extends TestCase
 	public void test6Reset()  throws Exception
 	{
 		TimePersistence file = new TimePersistence(data);
-		file.loadFile(data); 
+		file.loadFile();
 		data.reset(); 
 		Task record = data.get(4); 
 		assertEquals("0", record.getMinutes());  
@@ -152,12 +149,12 @@ public class TestFileIO extends TestCase
 	public void testCurrentRow() throws Exception
 	{
 		TimePersistence file = new TimePersistence(data);
-		file.loadFile(data);
+		file.loadFile();
 		assertEquals(-1, data.getCurrentRow()); 
 		data.setCurrentRow(3); 
-		file.saveFile(data, TXTVisitor.DATA_FILE); 
+		file.saveFile(TXTVisitor.DATA_FILE);
 		data.setCurrentRow(-1); 
-		file.loadFile(data);
+		file.loadFile();
 		assertEquals(3, data.getCurrentRow()); 
 	}
 	

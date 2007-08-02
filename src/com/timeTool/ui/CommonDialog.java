@@ -1,4 +1,7 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.ErrorHandler;
+import com.timeTool.ResourceAutomation;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -55,7 +58,7 @@ public abstract class CommonDialog extends JDialog implements ActionListener
 			}
 			catch (Exception e)
 			{
-				ErrorHandler.showError(this, e); 
+				ErrorHandler.showError(this, e);
 			} 
 	    }
 		else

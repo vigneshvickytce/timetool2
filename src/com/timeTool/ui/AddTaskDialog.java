@@ -1,12 +1,16 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.ui.CommonDialog;
+import com.timeTool.ui.OptionsPlugin;
+import com.timeTool.ResourceAutomation;
+import com.timeTool.ui.PluginFactory;
 
 import java.awt.Container;
 
 import javax.swing.JTextField;
 import javax.swing.JFrame;
 
-public class AddTaskDialog extends CommonDialog
-{
+public class AddTaskDialog extends CommonDialog {
 	public static final String DESCRIPTION_LABEL = "DescriptionLabelMessage";
 	public static final String TASK_LABEL = "TaskLabelMessage";
 	private static final String ADD_A_TASK_WINDOW_TITLE = "AddTaskTitleMessage";
