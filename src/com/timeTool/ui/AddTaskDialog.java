@@ -2,8 +2,8 @@ package com.timeTool.ui;
 
 import com.timeTool.ui.CommonDialog;
 import com.timeTool.ui.OptionsPlugin;
-import com.timeTool.ResourceAutomation;
 import com.timeTool.ui.PluginFactory;
+import com.timeTool.ResourceAutomation;
 
 import java.awt.Container;
 

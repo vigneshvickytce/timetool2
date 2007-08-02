@@ -1,6 +1,7 @@
 package com.timeTool;
 
 import com.timeTool.ui.*;
+import com.timeTool.ResourceAutomation;
 
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -20,10 +21,6 @@ public class TimeTool extends Observable
 	private int currentRow;
     private final ResourceAutomation resources  = new ResourceAutomation();
 	private static TimeToolWindow timeToolWindow; 
-
-	static {
-    	ResourceAutomation.initResources(); 
-    }
 
     public TimeTool() {
 		rows = new TaskModel(); 
@@ -51,7 +48,7 @@ public class TimeTool extends Observable
 		JOptionPane.showConfirmDialog(
 				timeToolWindow.getFrame(), 
 				ResourceAutomation.getResourceString("AboutMessage"), 
-				ResourceAutomation.getResourceString("AboutTitle"), 
+				ResourceAutomation.getResourceString("AboutTitle"),
 				JOptionPane.DEFAULT_OPTION, 
 				JOptionPane.PLAIN_MESSAGE,
 				new ImageIcon(resources.getResource("IconImage")));
@@ -91,7 +88,7 @@ public class TimeTool extends Observable
 		{
 			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
 	    			ResourceAutomation.getResourceString("NoTaskSelected"),
-	    			ResourceAutomation.getResourceString("InformationTitle"), 
+	    			ResourceAutomation.getResourceString("InformationTitle"),
 	    			JOptionPane.DEFAULT_OPTION);
 			return; 
 		}
@@ -423,10 +420,9 @@ public class TimeTool extends Observable
             TimeTool controller = new TimeTool();
             timeToolWindow = new TimeToolWindow(controller.resources, controller);
 			timeToolWindow.show(); 
-	    }
-		catch (Exception e)
-		{
-			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+	    } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
 	    			e.getMessage(),
 	    			ResourceAutomation.getResourceString("GenericError"), 
 	    			JOptionPane.DEFAULT_OPTION);

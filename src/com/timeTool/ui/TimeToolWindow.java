@@ -19,6 +19,7 @@ import com.timeTool.actions.SaveAction;
 import com.timeTool.actions.StopAction;
 import com.timeTool.actions.SupportAction;
 import com.timeTool.*;
+import com.timeTool.ResourceAutomation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

@@ -1,5 +1,7 @@
 package com.timeTool;
 
+import com.timeTool.ResourceAutomation;
+
 public class CSVVisitor extends ExportVisitor
 {
 	private static final String HOURS_HEADER = "HoursHeader";
@@ -41,10 +43,10 @@ public class CSVVisitor extends ExportVisitor
 
 	public String getHeader()
 	{
-		String result = quotePad(ResourceAutomation.getResourceString(PROJNUM_HEADER)) + getColumnSeperator(); 
+		String result = quotePad(ResourceAutomation.getResourceString(PROJNUM_HEADER)) + getColumnSeperator();
 		result = result + quotePad(ResourceAutomation.getResourceString(PROJNAME_HEADER)) + getColumnSeperator(); 
 		result = result + quotePad(ResourceAutomation.getResourceString(MINUTES_HEADER)) + getColumnSeperator(); 
-		result = result + quotePad(ResourceAutomation.getResourceString(HOURS_HEADER)) + getRowSeperator(); 
+		result = result + quotePad(ResourceAutomation.getResourceString(HOURS_HEADER)) + getRowSeperator();
 		
 		return result; 
 	}
