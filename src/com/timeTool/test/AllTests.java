@@ -2,6 +2,7 @@ package com.timeTool.test;
 
 import com.timeTool.actions.AdjustTimeKeyHandlerTest;
 import com.timeTool.ResourceAutomationTest;
+import com.timeTool.ui.CommonDialogTest;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -17,7 +18,7 @@ public class AllTests
 	*/
 	public static void main(String[] args)
 	{
-		junit.textui.TestRunner.run(AllTests.suite());
+		junit.textui.TestRunner.run(suite());
 	}
 
 	/**
@@ -26,9 +27,9 @@ public class AllTests
 	*/
 	public static Test suite()
 	{
-		TestSuite suite = new TestSuite("Test for timeTool");
-		//$JUnit-BEGIN$
-        suite.addTestSuite(ResourceAutomationTest.class);
+		final TestSuite suite = new TestSuite("Test for timeTool");
+		suite.addTestSuite(CommonDialogTest.class);
+		suite.addTestSuite(ResourceAutomationTest.class);
         suite.addTestSuite(TaskModelTest.class);
         suite.addTestSuite(AdjustTimeKeyHandlerTest.class);
         suite.addTestSuite(TimeToolTest.class);
@@ -36,7 +37,6 @@ public class AllTests
 		suite.addTestSuite(TestFileIO.class);
 		suite.addTestSuite(ExportOptionsTest.class);
 		suite.addTestSuite(TaskModelIteratorTest.class); 
-		//$JUnit-END$
 		return suite;
 	}
 
