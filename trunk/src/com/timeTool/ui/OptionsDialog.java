@@ -1,13 +1,16 @@
-package com.timeTool;
+package com.timeTool.ui;
 
 
-import java.awt.Container;
+import com.timeTool.ResourceAutomation;
+import com.timeTool.ui.PluginFactory;
+import com.timeTool.ErrorHandler;
+import com.timeTool.ui.OptionsPlugin;
+
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextField;
 
 public class OptionsDialog extends CommonDialog
 {
@@ -28,14 +31,14 @@ public class OptionsDialog extends CommonDialog
 		}
 		catch (Exception e)
 		{
-			ErrorHandler.showError(this, e); 
+			ErrorHandler.showError(this, e);
 		} 
         
         JTabbedPane tabbedPane = new JTabbedPane(); 
  
         for (int x = 0; x < plugins.size(); x++)
         {
-        	OptionsPlugin plugin = (OptionsPlugin)plugins.get(x); 
+        	OptionsPlugin plugin = (OptionsPlugin)plugins.get(x);
 	        JPanel panel = plugin.configurationOptions(this); 
 	        tabbedPane.addTab(plugin.getOptionsTitle(), 
 	        		null, // no icon

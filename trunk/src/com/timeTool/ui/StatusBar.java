@@ -1,4 +1,6 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.TimeTool;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

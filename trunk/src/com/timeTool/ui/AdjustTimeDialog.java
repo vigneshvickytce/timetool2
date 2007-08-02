@@ -1,10 +1,12 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.ResourceAutomation;
 
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 
-class AdjustTimeDialog extends JDialog {
+public class AdjustTimeDialog extends JDialog {
 
     private JTextField textField;
     private String response = null;

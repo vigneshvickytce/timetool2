@@ -1,4 +1,6 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.ui.CSVOptions;
 
 import java.util.ArrayList;
 
@@ -10,7 +12,7 @@ public class PluginFactory
 	private PluginFactory() throws Exception
 	{
 		plugins = new ArrayList();
-		plugins.add(new CSVOptions()); 
+		plugins.add(new CSVOptions());
 		plugins.add(new MySQLDataGrabber()); 
 	}
 	

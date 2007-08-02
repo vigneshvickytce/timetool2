@@ -1,6 +1,6 @@
 package com.timeTool.test;
 
-import com.timeTool.MySQLOptionPlugin;
+import com.timeTool.ui.MySQLOptionPlugin;
 
 import junit.framework.TestCase;
 
@@ -8,11 +8,11 @@ public class MySQLOptionPluginTest extends TestCase
 {
 
 	/*
-	 * Test method for 'com.timeTool.MySQLOptionPlugin.MySQLOptionPlugin()'
+	 * Test method for 'com.timeTool.ui.MySQLOptionPlugin.MySQLOptionPlugin()'
 	 */
 	public void testMySQLOptionPlugin() throws Exception
 	{
-		MySQLOptionPlugin data = new MySQLOptionPlugin(); 
+		MySQLOptionPlugin data = new MySQLOptionPlugin();
 		assertEquals("com.mysql.jdbc.Driver", data.getDatabaseClass()); 
 		assertEquals("jdbc:mysql://localhost/test", data.getDatabaseURL()); 
 		assertEquals("sa", data.getPassword()); 

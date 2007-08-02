@@ -1,4 +1,7 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.ui.CommonDialog;
+import com.timeTool.FilePersistence;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -48,7 +51,7 @@ public class MySQLOptionPlugin
 				xmlData = xmlData + line; 
 				line = file.readLine();
 			}
-			FilePersistence helper = new FilePersistence(); 
+			FilePersistence helper = new FilePersistence();
 			sqlSelect = helper.extractFromTag(xmlData, SQL_FIELD); 
 			databaseClass = helper.extractFromTag(xmlData, DRIVER_FIELD);
 			databaseURL = helper.extractFromTag(xmlData, DATABASE_URL_FIELD);

@@ -1,5 +1,7 @@
 package com.timeTool;
 
+import com.timeTool.ui.*;
+
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,7 +18,7 @@ public class TimeTool extends Observable
 	private Date currentTime;
 	private Date startTime; 
 	private int currentRow;
-    public static ResourceAutomation resources  = new ResourceAutomation();
+    private final ResourceAutomation resources  = new ResourceAutomation();
 	private static TimeToolWindow timeToolWindow; 
 
 	static {
@@ -30,26 +32,22 @@ public class TimeTool extends Observable
 		new Timer(1000, new SecondTimer(this)).start();
 	}
     
-	public Task get(int index)
-	{
+	public Task get(int index) {
 		return rows.get(index);
 	}
 
-    public void addRow(String number, String description)
-	{
+    public void addRow(String number, String description) {
 		Task row = new Task(number, description, 0); 
 		rows.add(row); 		
 		setChanged(); 
 		notifyObservers(); 
 	}
-	public void addRow(String number, String description, Integer minutes)
-	{
+	public void addRow(String number, String description, Integer minutes) {
 		Task row = new Task(number, description, minutes.longValue() * 60); 
 		rows.add(row); 
 	}
 	
-	public void about()
-	{
+	public void about() {
 		JOptionPane.showConfirmDialog(
 				timeToolWindow.getFrame(), 
 				ResourceAutomation.getResourceString("AboutMessage"), 
@@ -59,8 +57,7 @@ public class TimeTool extends Observable
 				new ImageIcon(resources.getResource("IconImage")));
 	}
 
-	public void addTask()
-	{
+	public void addTask() {
 		try
 		{
 			AddTaskDialog dialog = new AddTaskDialog(timeToolWindow.getFrame());
@@ -204,7 +201,7 @@ public class TimeTool extends Observable
 		if (currentRow > -1)
 		{
 			Task task = rows.get(currentRow);
-			RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription()); 
+			RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription());
 			dialog.setVisible(true); 
 			if (dialog.getResponse() == RenameDialog.OK)
 			{
@@ -241,7 +238,7 @@ public class TimeTool extends Observable
     {
 		currentRow = NO_ROW_SELECTED; 
 		TimePersistence data = new TimePersistence(this);
-		data.loadFile(this);
+		data.loadFile();
 		setChanged(); 
 		notifyObservers();
     }
@@ -250,7 +247,7 @@ public class TimeTool extends Observable
     	TimePersistence data = new TimePersistence(this);
 		try
 		{
-			data.saveFile(this, TXTVisitor.DATA_FILE);
+			data.saveFile(TXTVisitor.DATA_FILE);
 		}
 		catch (Exception e)
 		{
@@ -272,7 +269,7 @@ public class TimeTool extends Observable
     	filename = fileDialog.getDirectory() + fileDialog.getFile(); 
 		try
 		{
-			data.exportFile(this, filename);
+			data.exportFile(filename);
 		}
 		catch (Exception e)
 		{
@@ -415,7 +412,7 @@ public class TimeTool extends Observable
 	}
 	public void options()
 	{
-		OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame()); 
+		OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame());
 		dialog.setVisible(true); 
 	}
 
@@ -423,7 +420,8 @@ public class TimeTool extends Observable
 	{
 		try
 		{
-			timeToolWindow = new TimeToolWindow(resources, new TimeTool());
+            TimeTool controller = new TimeTool();
+            timeToolWindow = new TimeToolWindow(controller.resources, controller);
 			timeToolWindow.show(); 
 	    }
 		catch (Exception e)

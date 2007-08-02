@@ -1,4 +1,7 @@
-package com.timeTool;
+package com.timeTool.ui;
+
+import com.timeTool.ResourceAutomation;
+import com.timeTool.TimeTool;
 
 import javax.swing.table.AbstractTableModel;
 

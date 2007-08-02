@@ -84,7 +84,7 @@
          <fileset dir="${src}">
             <include name="**/*.gif" />
          </fileset>
-         <fileset dir="" excludes="**/ttdata2.txt">
+         <fileset dir="" excludes="**/ttdata.txt">
             <include name="**/*.dll"/>
             <include name="**/*.txt"/>
             <include name="**/trayicon.gif"/>
