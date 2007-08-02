@@ -60,8 +60,7 @@ public abstract class CommonDialog extends JDialog
 
 	public void CenterAndResize(JFrame frame)
 	{
-		setSize (400,screenHeight * 80);
-
+		pack();
 		final  Dimension dialogDim = getSize ();
 		final  Dimension frameDim = frame.getSize ();
 		final  Dimension screenSize = getToolkit ().getScreenSize ();
@@ -109,6 +108,12 @@ public abstract class CommonDialog extends JDialog
 
 	protected void addButtons(Container panel)
 	{
+		JPanel buttonPanel = getButtons();
+		addGB (buttonPanel, 1, screenHeight+1, panel);
+	}
+
+
+	protected JPanel getButtons() {
 		JPanel buttonPanel = new JPanel();
 
 		buttonOK = createButton(
@@ -138,8 +143,9 @@ public abstract class CommonDialog extends JDialog
 			}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "CancelButton");
 		buttonPanel.add(buttonOK);
 		buttonPanel.add(buttonCancel);
-		addGB (buttonPanel, 1, screenHeight+1, panel);
+		return buttonPanel;
 	}
+
 
 	protected void addLabel(String text, int yPosition, Container panel) {
 		JLabel label = new JLabel(text, SwingConstants.RIGHT);

@@ -1,25 +1,23 @@
 
 package com.timeTool.ui;
 
-import com.timeTool.ui.CommonDialog;
-
 import javax.swing.JPanel;
 
 public interface OptionsPlugin
 {
 
-	public abstract JPanel configurationOptions(CommonDialog parent);
+	JPanel configurationOptions(CommonDialog parent);
 	
-	public abstract JPanel getAddTaskPanel(CommonDialog parent) throws Exception;
+	JPanel getAddTaskPanel(CommonDialog parent) throws Exception;
 
-	public abstract void onOK() throws Exception;
+	void onOK() throws Exception;
 
-	public abstract String getOptionsTitle();
+	String getOptionsTitle();
 	
-	public abstract Boolean getEnabled(); 
+	Boolean getEnabled();
 
-	public abstract String getSelectedTask(); 
+	String getSelectedTask();
 	
-	public abstract String getSelectedDescription(); 
+	String getSelectedDescription(); 
 	
 }

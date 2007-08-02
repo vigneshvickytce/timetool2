@@ -1,13 +1,15 @@
 package com.timeTool.ui;
 
-import com.timeTool.ui.AddTaskDialog;
-import com.timeTool.ui.CommonDialog;
-import com.timeTool.ResourceAutomation;
 import com.timeTool.ErrorHandler;
+import com.timeTool.ResourceAutomation;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import javax.swing.JComboBox;
@@ -15,7 +17,7 @@ import javax.swing.JPanel;
 
 public class MySQLDataGrabber implements OptionsPlugin
 {
-	private MySQLOptionPlugin optionsPlugin; 
+	private MySQLOptionPlugin optionsPlugin;
 	private Connection connection;
 	private ArrayList tasks;
 	private JComboBox taskField;
@@ -24,11 +26,11 @@ public class MySQLDataGrabber implements OptionsPlugin
 	private class DropDownEntry
 	{
 		private String id; 
-		private String text; 
+		private String text;
 		DropDownEntry(String id, String text)
 		{
-			this.id = id; 
-			this.text = text; 
+			this.id = id;
+			this.text = text;
 		}
 		public String getID()
 		{
@@ -40,15 +42,15 @@ public class MySQLDataGrabber implements OptionsPlugin
 		}
 		public String toString()
 		{
-			return getText(); 
+			return getText();
 		}
-		
+
 	}
-	
+
 	public MySQLDataGrabber() throws Exception
 	{
-		tasks = null; 
-		optionsPlugin = new MySQLOptionPlugin(); 
+		tasks = null;
+		optionsPlugin = new MySQLOptionPlugin();
 	}
 
 	public ArrayList getTaskList()  throws Exception
@@ -57,28 +59,28 @@ public class MySQLDataGrabber implements OptionsPlugin
 		{
 			populateData();
 		}
-		ArrayList results = new ArrayList(); 
-		
+		ArrayList results = new ArrayList();
+
 		for (int x = 0; x < tasks.size(); x++)
 		{
 			String[] row = (String[])tasks.get(x);
-			String[] task = new String[]{row[0], row[1]}; 
-			boolean found = false; 
+			String[] task = new String[]{row[0], row[1]};
+			boolean found = false;
 			for (int y = 0; y < results.size(); y++)
 			{
-				String[] thisTask = (String[])results.get(y); 
-				
-				if (thisTask[0].equals(task[0]) == true) 
+				String[] thisTask = (String[])results.get(y);
+
+				if (thisTask[0].equals(task[0]) == true)
 				{
-					found = true; 
+					found = true;
 				}
 			}
 			if (found == false)
 			{
-				results.add(task); 
+				results.add(task);
 			}
 		}
-		return results; 
+		return results;
 	}
 	public ArrayList getDescriptionList(String key) throws Exception
 	{
@@ -86,39 +88,39 @@ public class MySQLDataGrabber implements OptionsPlugin
 		{
 			populateData();
 		}
-		ArrayList results = new ArrayList(); 
+		ArrayList results = new ArrayList();
 		for (int x = 0; x < tasks.size(); x++)
 		{
 			String[] row = (String[])tasks.get(x);
 			if (row[1].equals(key))
 			{
-				results.add(new String[]{row[2], row[3]}); 
+				results.add(new String[]{row[2], row[3]});
 			}
 		}
-		return results; 
+		return results;
 	}
-	
+
 	private void populateData() throws Exception, SQLException
 	{
 		try
 		{
-			openConnection(); 
+			openConnection();
 			Statement statement = connection.createStatement ();
 			statement.executeQuery (optionsPlugin.getSqlSelect());
 			ResultSet rs = statement.getResultSet ();
-			tasks = new ArrayList();  
+			tasks = new ArrayList();
 			while (rs.next ())
 			{
 				String taskID = rs.getString ("task_id");
 				String taskName = rs.getString ("task_name");
 				String descriptionID = rs.getString ("description_id");
 				String descriptionName = rs.getString ("description_text");
-				String[] row = new String[4]; 
-				row[0] = taskID; 
-				row[1] = taskName; 
-				row[2] = descriptionID; 
-				row[3] = descriptionName; 
-				tasks.add(row); 
+				String[] row = new String[4];
+				row[0] = taskID;
+				row[1] = taskName;
+				row[2] = descriptionID;
+				row[3] = descriptionName;
+				tasks.add(row);
 			}
 			rs.close ();
 			statement.close ();
@@ -152,41 +154,41 @@ public class MySQLDataGrabber implements OptionsPlugin
 
 	public JPanel configurationOptions(CommonDialog parent)
 	{
-		return optionsPlugin.configurationOptions(parent); 
+		return optionsPlugin.configurationOptions(parent);
 	}
 
 	public void onOK() throws Exception
 	{
-		optionsPlugin.onOK(); 
+		optionsPlugin.onOK();
 	}
 
 
 	public String getOptionsTitle()
 	{
-		return "MySQL Options"; 
+		return "MySQL Options";
 	}
 
 
 	public Boolean getEnabled()
 	{
-		return optionsPlugin.getEnabled(); 
+		return optionsPlugin.getEnabled();
 	}
 
 	public JPanel getAddTaskPanel(CommonDialog parent) throws Exception
 	{
-		JPanel panel = new JPanel(); 
-        parent.createGridBag(panel); 
-        
+		JPanel panel = new JPanel();
+        parent.createGridBag(panel);
+
 		parent.addLabel(ResourceAutomation.getResourceString(AddTaskDialog.TASK_LABEL), 0, panel);
 		parent.addLabel(ResourceAutomation.getResourceString(AddTaskDialog.DESCRIPTION_LABEL), 1, panel);
 
 		populateTaskDropDown();
-		populateDescriptionDropDown(); 
+		populateDescriptionDropDown();
 
-		parent.addField(taskField, 0, panel); 
-		parent.addField(descriptionField, 1, panel); 			
-		parent.addButtons(panel); 
-		
+		parent.addField(taskField, 0, panel);
+		parent.addField(descriptionField, 1, panel);
+		parent.addButtons(panel);
+
 		return panel;
 	}
 
@@ -198,30 +200,30 @@ public class MySQLDataGrabber implements OptionsPlugin
 		}
 		else
 		{
-			descriptionField.removeAllItems(); 
+			descriptionField.removeAllItems();
 		}
-		DropDownEntry currentSelection = (DropDownEntry)taskField.getSelectedItem(); 
-		String key = currentSelection.getText(); 
+		DropDownEntry currentSelection = (DropDownEntry)taskField.getSelectedItem();
+		String key = currentSelection.getText();
 
 		ArrayList descriptionList = getDescriptionList(key);
 		for (int x = 0; x < descriptionList.size(); x++)
 		{
-			String[] rawEntry = (String[])descriptionList.get(x); 
-			DropDownEntry entry = new DropDownEntry(rawEntry[0], rawEntry[1]); 
-			descriptionField.addItem(entry); 
+			String[] rawEntry = (String[])descriptionList.get(x);
+			DropDownEntry entry = new DropDownEntry(rawEntry[0], rawEntry[1]);
+			descriptionField.addItem(entry);
 		}
 	}
 
 	private void populateTaskDropDown() throws Exception
 	{
 		taskField = new JComboBox();
-		ArrayList tasks = getTaskList(); 
-		String[] taskList = new String[tasks.size()]; 
+		ArrayList tasks = getTaskList();
+		String[] taskList = new String[tasks.size()];
 		for (int x = 0; x < tasks.size(); x++)
 		{
 			String[] rawEntry = (String[])tasks.get(x);
-			DropDownEntry entry = new DropDownEntry(rawEntry[0], rawEntry[1]); 
-			taskField.addItem(entry);  
+			DropDownEntry entry = new DropDownEntry(rawEntry[0], rawEntry[1]);
+			taskField.addItem(entry);
 		}
 		taskField.addActionListener(new ActionListener()
 				{
@@ -234,20 +236,20 @@ public class MySQLDataGrabber implements OptionsPlugin
 						catch (Exception e)
 						{
 							ErrorHandler.showError(null, e);
-						} 
+						}
 					}
 				});
 
 	}
-	
+
 	public String getSelectedTask()
 	{
-		DropDownEntry entry = (DropDownEntry)taskField.getSelectedItem(); 
-		return entry.getText(); 
+		DropDownEntry entry = (DropDownEntry)taskField.getSelectedItem();
+		return entry.getText();
 	}
 	public String getSelectedDescription()
 	{
-		DropDownEntry entry = (DropDownEntry)descriptionField.getSelectedItem(); 
-		return entry.getText(); 
+		DropDownEntry entry = (DropDownEntry)descriptionField.getSelectedItem();
+		return entry.getText();
 	}
 }
