@@ -10,8 +10,9 @@ package com.timeTool;
 //  Public Domain Software -- Free to Use as You Like  //
 /////////////////////////////////////////////////////////
 
+import com.timeTool.ResourceAutomation;
+
 import java.lang.reflect.Method;
-import javax.swing.JOptionPane;
 
 public class BrowserLaunch 
 {
