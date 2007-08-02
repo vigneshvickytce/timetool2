@@ -1,28 +1,21 @@
 package com.timeTool.ui;
 
 
-import com.timeTool.ResourceAutomation;
-import com.timeTool.ui.PluginFactory;
 import com.timeTool.ErrorHandler;
-import com.timeTool.ui.OptionsPlugin;
+import com.timeTool.ResourceAutomation;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-public class OptionsDialog extends CommonDialog
+public final class OptionsDialog extends CommonDialog
 {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -742579022162992678L;
-	private ArrayList plugins;  
+	private List<OptionsPlugin> plugins;
 	
-	public OptionsDialog(JFrame frame) 
-    {
+	public OptionsDialog(JFrame frame) {
         super(frame, ResourceAutomation.getResourceString("optionsLabel"), true);
         
         try
@@ -34,39 +27,33 @@ public class OptionsDialog extends CommonDialog
 			ErrorHandler.showError(this, e);
 		} 
         
-        JTabbedPane tabbedPane = new JTabbedPane(); 
- 
-        for (int x = 0; x < plugins.size(); x++)
-        {
-        	OptionsPlugin plugin = (OptionsPlugin)plugins.get(x);
-	        JPanel panel = plugin.configurationOptions(this); 
-	        tabbedPane.addTab(plugin.getOptionsTitle(), 
-	        		null, // no icon
-	        		panel,
-	        		plugin.getOptionsTitle());
-        }
-    	setContentPane(tabbedPane); 
-        CenterAndResize(frame); 
+        final JTabbedPane tabbedPane = new JTabbedPane();
+
+		for (OptionsPlugin plugin : plugins) {
+			final JPanel panel = plugin.configurationOptions(this);
+			tabbedPane.addTab(plugin.getOptionsTitle(),
+				null, // no icon
+				panel,
+				plugin.getOptionsTitle());
+		}
+    	setContentPane(tabbedPane);
+		setResizable(false);
+		CenterAndResize(frame);
     }
 
+	@Override
 	protected void onOK() throws Exception
 	{
-        for (int x = 0; x < plugins.size(); x++)
-        {
-        	OptionsPlugin plugin = (OptionsPlugin)plugins.get(x); 
+		for (OptionsPlugin plugin : plugins) {
 			plugin.onOK();
-        }
+		}
 	}
 
+	@Override
 	protected void onCancel()
 	{
 		//do nothing
 	}
-
-	//public ExportOptions getOptions()
-	//{
-	//	return csvOptions.getExportOptions();
-	//}
 
 
 }
