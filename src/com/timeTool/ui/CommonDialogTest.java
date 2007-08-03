@@ -13,7 +13,7 @@ public class CommonDialogTest extends TestCase {
 	public void test_Button_Clicks() {
 		final CommonDialogTest.CommonDialogMock dialog = new CommonDialogMock();
 
-		dialog.addButtons(dialog.getContentPane());
+        dialog.getContentPane().add(dialog.getButtons());
 
 		final AbstractButton okButton = (AbstractButton)getComponentNamed(dialog, "OKButton");
 		final AbstractButton cancelButton = (AbstractButton)getComponentNamed(dialog, "CancelButton");
