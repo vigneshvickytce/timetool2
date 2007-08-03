@@ -7,6 +7,9 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Observable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 
@@ -27,10 +30,25 @@ public class TimeTool extends Observable
 		rows = new TaskModel(); 
 		currentRow = NO_ROW_SELECTED;
 		setStartTime(null);
-		new Timer(1000, new SecondTimer(this)).start();
-	}
-    
-	public Task get(int index) {
+
+        startJobs();
+    }
+
+    private void startJobs() {
+        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+        executorService.scheduleAtFixedRate(new Runnable(){
+            public void run() {
+                tick();
+            }
+        }, 1L, 1L, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(new Runnable(){
+            public void run() {
+                saveTaskList();
+            }
+        }, 30L, 30L, TimeUnit.SECONDS);
+    }
+
+    public Task get(int index) {
 		return rows.get(index);
 	}
 
