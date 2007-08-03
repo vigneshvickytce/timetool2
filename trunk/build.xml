@@ -83,6 +83,7 @@
          </fileset>
          <fileset dir="${src}">
             <include name="**/*.gif" />
+            <include name="**/*.png" />
          </fileset>
          <fileset dir="" excludes="**/ttdata.txt">
             <include name="**/*.dll"/>

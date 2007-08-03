@@ -5,6 +5,10 @@ import com.timeTool.ResourceAutomation;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.*;
+import static java.awt.GridBagConstraints.NORTHEAST;
+import static java.awt.GridBagConstraints.NONE;
+import static java.awt.GridBagConstraints.SOUTHEAST;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -12,8 +16,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class MySQLDataGrabber implements OptionsPlugin
 {
@@ -176,18 +179,19 @@ public class MySQLDataGrabber implements OptionsPlugin
 
 	public JPanel getAddTaskPanel(CommonDialog parent) throws Exception
 	{
-		JPanel panel = new JPanel();
-        parent.createGridBag(panel);
+		JPanel panel = new JPanel(new GridBagLayout());
 
-		parent.addLabel(ResourceAutomation.getResourceString(AddTaskDialog.TASK_LABEL), 0, panel);
-		parent.addLabel(ResourceAutomation.getResourceString(AddTaskDialog.DESCRIPTION_LABEL), 1, panel);
-
-		populateTaskDropDown();
+        JLabel taskLabel = new JLabel(ResourceAutomation.getResourceString(AddTaskDialog.TASK_LABEL), SwingConstants.RIGHT);
+        JLabel descriptionLabel = new JLabel(ResourceAutomation.getResourceString(AddTaskDialog.DESCRIPTION_LABEL), SwingConstants.RIGHT);
+        populateTaskDropDown();
 		populateDescriptionDropDown();
 
-		parent.addField(taskField, 0, panel);
-		parent.addField(descriptionField, 1, panel);
-		parent.addButtons(panel);
+        panel.setLayout(new GridBagLayout());
+        panel.add(taskLabel,           new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+        panel.add(taskField,           new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+        panel.add(descriptionLabel,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+        panel.add(descriptionField,    new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+        panel.add(parent.getButtons(), new GridBagConstraints(1, 2, 1, 1, 0.0, 1.0, SOUTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
 
 		return panel;
 	}

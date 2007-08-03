@@ -35,15 +35,11 @@ public abstract class CommonDialog extends JDialog
 	private JButton buttonOK;
 	protected int response;
 	private JButton buttonCancel;
-	private GridBagLayout gridLayout;
-	private GridBagConstraints gridConstraints = new GridBagConstraints ();
-	private int screenHeight = 1;
 	protected abstract void onOK() throws Exception;
 	protected abstract void onCancel();
 
 	public CommonDialog(JFrame frame, String title, boolean modal) {
 		super(frame, title, modal);
-		createGridBag();
 		response = CANCEL;
 		CenterAndResize(frame);
 	}
@@ -79,40 +75,6 @@ public abstract class CommonDialog extends JDialog
 		return response;
 	}
 
-	public void addGB(Component component, int x, int y, Container panel) {
-		gridConstraints.gridx=x; gridConstraints.gridy = y;
-		gridLayout.setConstraints (component, gridConstraints);
-		panel.add(component);
-		if (screenHeight <= y) {
-			screenHeight = y;
-		}
-	}
-
-	private void createGridBag() {
-		gridLayout = new GridBagLayout();
-		getContentPane().setLayout(gridLayout);
-		gridConstraints.fill = GridBagConstraints.BOTH;
-		gridConstraints.gridwidth=6; gridConstraints.gridheight=1;
-		gridConstraints.weightx=1d; gridConstraints.weighty=1;
-		gridConstraints.insets = new Insets (10,20,10,20);
-	}
-
-	public void createGridBag(JPanel panel) {
-		gridLayout = new GridBagLayout();
-		panel.setLayout(gridLayout);
-		gridConstraints.fill = GridBagConstraints.BOTH;
-		gridConstraints.gridwidth=6; gridConstraints.gridheight=1;
-		gridConstraints.weightx=1; gridConstraints.weighty=1;
-		gridConstraints.insets = new Insets (10,20,10,20);
-	}
-
-	protected void addButtons(Container panel)
-	{
-		JPanel buttonPanel = getButtons();
-		addGB (buttonPanel, 1, screenHeight+1, panel);
-	}
-
-
 	protected JPanel getButtons() {
 		JPanel buttonPanel = new JPanel();
 
@@ -144,51 +106,6 @@ public abstract class CommonDialog extends JDialog
 		buttonPanel.add(buttonOK);
 		buttonPanel.add(buttonCancel);
 		return buttonPanel;
-	}
-
-
-	protected void addLabel(String text, int yPosition, Container panel) {
-		JLabel label = new JLabel(text, SwingConstants.RIGHT);
-		//Give the labels a small weightx and a
-		// width of 1 to push them to the left
-		gridConstraints.weightx=0.10; gridConstraints.weighty=1.0;
-		gridConstraints.gridwidth=1; gridConstraints.gridheight=1;
-		gridConstraints.insets = new Insets (0,0,0,10);
-		addGB (label,0,yPosition, panel);
-	}
-
-	protected JTextField addField(int yPosition, String defaultText, Container panel) {
-		// Give the textfields a large weightx and a
-		// width of 5 so they will have a long x width
-		gridConstraints.weightx=1.0; gridConstraints.weighty=1.0;
-		gridConstraints.insets = new Insets (10,0,10,10);
-		gridConstraints.gridwidth=5; gridConstraints.gridheight=1;
-		JTextField field = new JTextField();
-		field.setText(defaultText);
-		addGB (field,1,yPosition, panel);
-		return field;
-	}
-
-	protected JCheckBox addCheckbox(int yPosition, boolean defaultState, Container panel) {
-		// Give the textfields a large weightx and a
-		// width of 5 so they will have a long x width
-		gridConstraints.weightx=1.0; gridConstraints.weighty=1.0;
-		gridConstraints.insets = new Insets (10,0,10,10);
-		gridConstraints.gridwidth=5; gridConstraints.gridheight=1;
-		JCheckBox field = new JCheckBox();
-		field.setSelected(defaultState);
-		addGB (field,1,yPosition, panel);
-		return field;
-	}
-
-	protected JComponent addField(JComponent field, int yPosition, Container panel) {
-		// Give the textfields a large weightx and a
-		// width of 5 so they will have a long x width
-		gridConstraints.weightx=1.0; gridConstraints.weighty=1.0;
-		gridConstraints.insets = new Insets (10,0,10,10);
-		gridConstraints.gridwidth=5; gridConstraints.gridheight=1;
-		addGB (field,1,yPosition, panel);
-		return field;
 	}
 
 
