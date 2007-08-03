@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Created-By: 1.5.0_02 (Sun Microsystems Inc.)
 Main-Class: com.timeTool.TimeTool
-Class-Path: jars/mysql-connector-java-3.1.11-bin.jar jars/junit.jar jars/mssqlserver.jar jars/msutil.jar jars/msbase.jar
+Class-Path: jars/mysql-connector-java-3.1.11-bin.jar
