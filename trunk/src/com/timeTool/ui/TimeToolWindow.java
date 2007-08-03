@@ -153,7 +153,7 @@ public final class TimeToolWindow extends JPanel implements Observer
     	panel.add("North",resources.createToolbar());
     	panel.add("Center", scroller);
     	add("Center", panel);
-    	StatusBar statusBar = new StatusBar(controller);
+    	StatusBar statusBar = new StatusBar(controller, resources);
     	add("South", statusBar);
 	}
 

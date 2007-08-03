@@ -20,7 +20,8 @@ public class TimeTool extends Observable
 	private Date startTime; 
 	private int currentRow;
     private final ResourceAutomation resources  = new ResourceAutomation();
-	private static TimeToolWindow timeToolWindow; 
+	private static TimeToolWindow timeToolWindow;
+    public static final String EVENT_SAVED_BY_USER = "USER_SAVE";
 
     public TimeTool() {
 		rows = new TaskModel(); 
@@ -245,7 +246,9 @@ public class TimeTool extends Observable
 		try
 		{
 			data.saveFile(TXTVisitor.DATA_FILE);
-		}
+            setChanged();
+            notifyObservers(EVENT_SAVED_BY_USER);
+        }
 		catch (Exception e)
 		{
 			ErrorHandler.showError(timeToolWindow.getFrame(), e); 
