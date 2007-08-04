@@ -21,16 +21,8 @@ import com.timeTool.actions.SupportAction;
 import com.timeTool.*;
 import com.timeTool.ResourceAutomation;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.KeyEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -120,9 +112,9 @@ public final class TimeToolWindow extends JPanel implements Observer
 
 	private void createKeyHandler(final TimeTool controller) {
         final AdjustTimeKeyHandler adjustTimeKeyHandler = new AdjustTimeKeyHandler(controller);
-        char[] adjustKeys = new char[]{'+', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 
-        for (final char key : adjustKeys) {
+        char[] numericKeys = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+        for (final char key : numericKeys) {
             registerKeyboardAction(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {
                     adjustTimeKeyHandler.perform(key);
@@ -130,6 +122,22 @@ public final class TimeToolWindow extends JPanel implements Observer
             }, KeyStroke.getKeyStroke(key), JComponent.WHEN_IN_FOCUSED_WINDOW);
         }
 
+        char[] adjustKeys = new char[]{'+', '-'};
+        for (final char key : adjustKeys) {
+            registerKeyboardAction(new ActionListener(){
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        if (e.getModifiers() == Event.SHIFT_MASK) {
+                            adjustTimeKeyHandler.perform(key);
+                        } else if (e.getModifiers() == 0) {
+                            controller.adjust(key + "1");
+                        }
+                    } catch (Exception ex) {
+                        ErrorHandler.showError(frame, new Exception(ex)); 
+                    }
+                }
+            }, KeyStroke.getKeyStroke(key), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }
 
 		registerKeyboardAction(new ActionListener(){
                 public void actionPerformed(ActionEvent e) {
