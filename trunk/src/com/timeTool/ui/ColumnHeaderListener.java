@@ -13,20 +13,18 @@ public class ColumnHeaderListener extends MouseAdapter
 {
 	private final TimeTool controller;
 
-
 	public ColumnHeaderListener(TimeTool controller) {
 		this.controller = controller;
 	}
 
 
-	public void mouseClicked(MouseEvent evt)
-	{
-		JTableHeader tableHeader = (JTableHeader)evt.getSource();
+	public void mouseClicked(MouseEvent event) {
+		JTableHeader tableHeader = (JTableHeader)event.getSource();
 		JTable table = tableHeader.getTable();
 		TableColumnModel colModel = table.getColumnModel();
 
 		// The index of the column whose header was clicked
-		int index = colModel.getColumnIndexAtX(evt.getX());
+		int index = colModel.getColumnIndexAtX(event.getX());
 		controller.sort(index);
 		//tableHeader.set
 	}

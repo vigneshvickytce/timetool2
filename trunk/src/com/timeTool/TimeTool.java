@@ -107,9 +107,12 @@ public class TimeTool extends Observable
 	}
 	public void sort(int index)
 	{
-		currentRow = NO_ROW_SELECTED;
-		rows.sort(index); 
-		setChanged(); 
+        Task currentTask = rows.get(currentRow);
+
+        currentRow = NO_ROW_SELECTED;
+		rows.sort(index);
+        currentRow = rows.indexOf(currentTask); 
+        setChanged();
 		notifyObservers();
 	}
 	
