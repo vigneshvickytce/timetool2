@@ -258,13 +258,19 @@ public final class TimeToolWindow extends JPanel implements Observer
 	{
     	taskList.repaint(); 
     	int currentRow = controller.getCurrentRow();
-    	if (currentRow == TimeTool.NO_ROW_SELECTED)
-    	{
+    	if (currentRow == TimeTool.NO_ROW_SELECTED) {
     		taskList.clearSelection(); 
-    	}
-    	else
-    	{
-    		taskList.changeSelection(currentRow,
+    	} else {
+
+            String title = ResourceAutomation.getResourceString("Title");
+            final Task currentTask = controller.get(currentRow);
+            final String hoursLabel = ResourceAutomation.getResourceString("GridHourHeader");
+            trayIcon.setToolTipText(
+                    title + "\n" +
+                    controller.getTotalHours() + " " + hoursLabel + "\n" +
+                    currentTask.getId() + " " + currentTask.getHours() + " " + hoursLabel);
+
+            taskList.changeSelection(currentRow,
                     1,
                     false,
                     false); 
