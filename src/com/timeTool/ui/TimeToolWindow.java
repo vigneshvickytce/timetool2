@@ -56,7 +56,6 @@ public final class TimeToolWindow extends JPanel implements Observer
 	public TimeToolWindow(ResourceAutomation resources, TimeTool controller) {
 		super(true);
 
-
 		setLookAndFeel();
 		this.resources = resources;
 		this.controller = controller;
