@@ -6,12 +6,11 @@ import java.util.List;
 public class PluginFactory
 {
 	private static PluginFactory _instance = null;
-	private ArrayList plugins;
+	private final List<OptionsPlugin> plugins = new ArrayList<OptionsPlugin>();
 
-	private PluginFactory() throws Exception
-	{
-		plugins = new ArrayList();
-		plugins.add(new CSVOptions());
+	private PluginFactory() throws Exception {
+        plugins.add(new GeneralOptions());
+        plugins.add(new CSVOptions());
 		plugins.add(new MySQLDataGrabber());
 	}
 
@@ -24,22 +23,17 @@ public class PluginFactory
 		return _instance;
 	}
 
-	public List<OptionsPlugin> getPlugins()
-	{
+	public List<OptionsPlugin> getPlugins() {
 		return plugins;
 	}
 
-	public OptionsPlugin getActivePlugin()
-	{
+	public OptionsPlugin getActivePlugin() {
 		OptionsPlugin activePlugin = null;
-		for (int x = 0; x < plugins.size(); x++)
-		{
-			OptionsPlugin thisPlugin = (OptionsPlugin)plugins.get(x);
-			if (thisPlugin.getEnabled().equals(true))
-			{
-				activePlugin = thisPlugin;
-			}
-		}
-		return activePlugin;
+        for (OptionsPlugin thisPlugin : plugins) {
+            if (thisPlugin.getEnabled().equals(true)) {
+                activePlugin = thisPlugin;
+            }
+        }
+        return activePlugin;
 	}
 }

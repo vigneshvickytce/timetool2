@@ -1,6 +1,6 @@
 package com.timeTool.ui;
 
-import com.timeTool.ExportOptions;
+import com.timeTool.TimeToolPreferences;
 import com.timeTool.ResourceAutomation;
 
 import java.awt.GridBagConstraints;
@@ -17,7 +17,7 @@ public class CSVOptions implements OptionsPlugin {
 	private static final String DECIMAL_LABEL = "CSVDecimalLabelMessage";
 	private static final String DELIMITER_LABEL = "CSVDelimiterLabelMessage";
 	private static final String CSVOPTIONS_TITLE_MESSAGE = "CSVOptionsTitleMessage";
-	private ExportOptions options = new ExportOptions();;
+
 	private JTextField delimiterField;
 	private JTextField decimalField;
 	private JTextField quotesField;
@@ -31,7 +31,8 @@ public class CSVOptions implements OptionsPlugin {
 		final JLabel decimalLabel = new JLabel(ResourceAutomation.getResourceString(DECIMAL_LABEL));
 		final JLabel quoteLabel = new JLabel(ResourceAutomation.getResourceString(QUOTES_LABEL));
 
-		delimiterField = new JTextField(options.getDelimiter(), 5);
+		final TimeToolPreferences options = new TimeToolPreferences();
+        delimiterField = new JTextField(options.getDelimiter(), 5);
 		decimalField = new JTextField(options.getDecimal(), 5);
 		quotesField = new JTextField(options.getQuotes(), 5);
 
@@ -50,7 +51,8 @@ public class CSVOptions implements OptionsPlugin {
 
 	public void onOK() throws Exception
 	{
-		options.setDelimiter(delimiterField.getText());
+        final TimeToolPreferences options = new TimeToolPreferences();
+        options.setDelimiter(delimiterField.getText());
 		options.setDecimal(decimalField.getText());
 		options.setQuotes(quotesField.getText());
 		options.serialize();
@@ -65,25 +67,22 @@ public class CSVOptions implements OptionsPlugin {
 	{
 		// always return false b/c it is always enabled... 
 		//makes sense huh?  
-		return new Boolean(false);
+		return false;
 	}
 
 	public JPanel getAddTaskPanel(CommonDialog parent)
 	{
-		// this will never override the add task dialog
-		return null;
+        throw new UnsupportedOperationException("method not implemented");
 	}
 
 	public String getSelectedTask()
 	{
-		// not needed
-		return null;
+        throw new UnsupportedOperationException("method not implemented");
 	}
 
 	public String getSelectedDescription()
 	{
-		// not needed
-		return null;
+        throw new UnsupportedOperationException("method not implemented");
 	}
 
 }
