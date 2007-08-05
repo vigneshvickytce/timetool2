@@ -20,15 +20,16 @@ public class FilePersistence
 
 	public String wrapDataInTag(String data, String tagName)
 	{
-		String string = START_TAG_BEGIN + tagName + TAG_END + data + END_TAG_BEGIN + tagName + TAG_END;
-		return string;
+        return START_TAG_BEGIN + tagName + TAG_END + data + END_TAG_BEGIN + tagName + TAG_END;
 	}
 
 	public String extractFromTag(String xmlStream, String tagName)
 	{
 		String startTag = START_TAG_BEGIN + tagName + TAG_END; 
 		String endTag = END_TAG_BEGIN + tagName + TAG_END;
-		int startTagOffset = xmlStream.indexOf(startTag) + startTag.length(); 
+        if (!xmlStream.contains(startTag)) return null; 
+
+        int startTagOffset = xmlStream.indexOf(startTag) + startTag.length();
 		int endTagOffset = xmlStream.indexOf(endTag);  
 		return xmlStream.substring(startTagOffset, endTagOffset); 
 	}

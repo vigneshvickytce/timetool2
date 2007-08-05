@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.Date;
 
-import com.timeTool.ExportOptions;
+import com.timeTool.TimeToolPreferences;
 import com.timeTool.TXTVisitor;
 import com.timeTool.Task;
 import com.timeTool.TimeTool;
@@ -31,7 +31,7 @@ public class TestFileIO extends TestCase
 	{
 		File deleteFile = new File(TEST_CSV); 
 		deleteFile.delete(); 
-		deleteFile = new File(ExportOptions.OPTIONS_FILENAME); 
+		deleteFile = new File(TimeToolPreferences.OPTIONS_FILENAME);
 		deleteFile.delete();
 	}
 	
@@ -108,7 +108,7 @@ public class TestFileIO extends TestCase
 	}
 	public void test5ExportOptions()  throws Exception
 	{
-		ExportOptions options = new ExportOptions(); 
+		TimeToolPreferences options = new TimeToolPreferences();
 		options.setQuotes("q"); 
 		options.setDelimiter("r"); 
 		options.setDecimal("s"); 

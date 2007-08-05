@@ -10,6 +10,7 @@ import java.util.Observable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledFuture;
 
 import javax.swing.*;
 
@@ -25,27 +26,38 @@ public class TimeTool extends Observable
     private final ResourceAutomation resources  = new ResourceAutomation();
 	private static TimeToolWindow timeToolWindow;
     public static final String EVENT_SAVED_BY_USER = "USER_SAVE";
+    private ScheduledExecutorService jobExecutor;
+    private ScheduledFuture<?> autoSaveJob;
 
     public TimeTool() {
 		rows = new TaskModel(); 
 		currentRow = NO_ROW_SELECTED;
 		setStartTime(null);
 
-        startJobs();
+        jobExecutor = Executors.newScheduledThreadPool(2);
+        startTimerJob();
+        startAutoSaveJob();
     }
 
-    private void startJobs() {
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
-        executorService.scheduleAtFixedRate(new Runnable(){
+    private void startTimerJob() {
+        jobExecutor.scheduleAtFixedRate(new Runnable(){
             public void run() {
                 tick();
             }
         }, 1L, 1L, TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(new Runnable(){
+    }
+
+    private void startAutoSaveJob() {
+        final TimeToolPreferences options = new TimeToolPreferences();
+        long interval = options.getAutosave();
+        if (autoSaveJob != null) {
+            autoSaveJob.cancel(false); 
+        }
+        autoSaveJob = jobExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 saveTaskList();
             }
-        }, 30L, 30L, TimeUnit.SECONDS);
+        }, interval, interval, TimeUnit.SECONDS);
     }
 
     public Task get(int index) {
@@ -431,8 +443,9 @@ public class TimeTool extends Observable
 	public void options()
 	{
 		OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame());
-		dialog.setVisible(true); 
-	}
+		dialog.setVisible(true);
+        startAutoSaveJob();
+    }
 
 	public static void main(String[] args)
 	{

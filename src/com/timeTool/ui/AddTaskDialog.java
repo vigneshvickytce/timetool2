@@ -68,8 +68,7 @@ public class AddTaskDialog extends CommonDialog {
     	}
     }
     
-    protected void onCancel()
-    {
+    protected void onCancel() {
     	task = "";  
     	description = "";  
     }

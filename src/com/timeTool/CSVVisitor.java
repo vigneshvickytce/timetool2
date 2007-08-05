@@ -8,11 +8,11 @@ public class CSVVisitor extends ExportVisitor
 	private static final String MINUTES_HEADER = "MinutesHeader";
 	private static final String PROJNAME_HEADER = "ProjNameHeader";
 	private static final String PROJNUM_HEADER = "ProjNumHeader";
-	private ExportOptions options;
+	private TimeToolPreferences options;
 	
 	public CSVVisitor()
 	{
-		options = new ExportOptions(); 
+		options = new TimeToolPreferences();
 	}
 	
 	public String quotePad(String string)
