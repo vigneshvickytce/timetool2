@@ -1,6 +1,11 @@
 package com.timeTool.ui;
 
 import com.jeans.trayicon.WindowsTrayIcon;
+import com.timeTool.ErrorHandler;
+import com.timeTool.ResourceAutomation;
+import com.timeTool.Task;
+import com.timeTool.TimePersistence;
+import com.timeTool.TimeTool;
 import com.timeTool.actions.AboutAction;
 import com.timeTool.actions.AddAction;
 import com.timeTool.actions.AdjustAction;
@@ -18,15 +23,21 @@ import com.timeTool.actions.ResetAction;
 import com.timeTool.actions.SaveAction;
 import com.timeTool.actions.StopAction;
 import com.timeTool.actions.SupportAction;
-import com.timeTool.*;
-import com.timeTool.ResourceAutomation;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Event;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -37,7 +48,6 @@ import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
-import javax.swing.BorderFactory;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
@@ -259,9 +269,9 @@ public final class TimeToolWindow extends JPanel implements Observer
     	taskList.repaint(); 
     	int currentRow = controller.getCurrentRow();
     	if (currentRow == TimeTool.NO_ROW_SELECTED) {
-    		taskList.clearSelection(); 
-    	} else {
-
+    		taskList.clearSelection();
+		} else {
+			final ImageIcon trayImage = resources.getImageResource("TrayIconImage");
             String title = ResourceAutomation.getResourceString("Title");
             final Task currentTask = controller.get(currentRow);
             final String hoursLabel = ResourceAutomation.getResourceString("GridHourHeader");
@@ -273,8 +283,23 @@ public final class TimeToolWindow extends JPanel implements Observer
             taskList.changeSelection(currentRow,
                     1,
                     false,
-                    false); 
+                    false);
     	}
+
+		final ImageIcon trayImage;
+		if (currentRow == TimeTool.NO_ROW_SELECTED) {
+			trayImage = resources.getImageResource("TrayIconImageStopped");
+		} else {
+			trayImage = resources.getImageResource("TrayIconImage");
+    	}
+		try {
+			trayIcon.setImage(trayImage.getImage(), 16, 16);
+		} catch (Exception t) {
+			ErrorHandler.showError(frame, new Exception(t));
+            System.out.println(ResourceAutomation.getResourceString("UncaughtException") + t);
+            t.printStackTrace();
+        	WindowsTrayIcon.cleanUp();
+		}
 	}
 	
 	private void createTrayIcon() 
