@@ -84,11 +84,11 @@
          <fileset dir="${src}">
             <include name="**/*.gif" />
             <include name="**/*.png" />
+            <include name="**/*.properties" />
          </fileset>
          <fileset dir="" excludes="**/ttdata.txt, **/TimeTool-notes-*.txt">
             <include name="**/*.gif" />
             <include name="**/*.png" />
-            <include name="**/*.properties" />
             <include name="**/*.dll"/>
             <include name="**/*.txt"/>
             <include name="**/trayicon.gif"/>
