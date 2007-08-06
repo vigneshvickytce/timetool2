@@ -5,10 +5,6 @@ import javax.swing.AbstractAction;
 
 public class QuitAction extends AbstractAction
 {
-    /**
-	 * 
-	 */
-	private static final long serialVersionUID = 3119998280337602332L;
 	public static final String quitAction     = "quit";    
 
 	public QuitAction() 
@@ -18,6 +14,6 @@ public class QuitAction extends AbstractAction
 
     public void actionPerformed(ActionEvent e) 
     {
-    System.exit(0);
+        System.exit(0);
 	}
 }

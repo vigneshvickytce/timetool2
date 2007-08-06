@@ -10,12 +10,14 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -43,27 +45,20 @@ public class ResourceAutomation
     public static final String actionSuffix = "Action";
     public static final String tipSuffix = "Tooltip";
     public static final String hotKeySuffix = "Hotkey";
+    private final File imageDirectory;
 
-    
-    static {
-    	
-	    //init the resources
-        try 
-        {
-            resources = ResourceBundle.getBundle("com.timeTool.resources.TimeTool", 
-                    Locale.getDefault());
 
-        } catch (MissingResourceException mre) 
-        {
+    public ResourceAutomation(File imageDirectory) {
+    	super();
+        this.imageDirectory = imageDirectory;
+        menuItems = new Hashtable<String, JMenuItem>();
+        //init the resources
+        try {
+            resources = ResourceBundle.getBundle("com.timeTool.resources.TimeTool", Locale.getDefault());
+        } catch (MissingResourceException mre) {
             ErrorHandler.showError(null, mre);
             System.exit(1);
-        }    
-    }
-    
-    public ResourceAutomation()
-    {
-    	super(); 
-    	menuItems = new Hashtable<String, JMenuItem>();
+        }
     }
 
     /**
@@ -72,29 +67,18 @@ public class ResourceAutomation
      * @return
      *      the toolbar component
      */
-    public Component createToolbar() 
-    {
+    public Component createToolbar() {
 		toolbar = new JToolBar();
 		String[] toolKeys = tokenize(getResourceString("toolbar"));
         for (String toolKey : toolKeys) {
             if (toolKey.equals("-")) {
                 toolbar.add(Box.createHorizontalStrut(5));
             } else {
-                toolbar.add(createTool(toolKey));
+                toolbar.add(createToolbarButton(toolKey));
             }
         }
         toolbar.add(Box.createHorizontalGlue());
 		return toolbar;
-    }
-    /**
-     * Hook through which every toolbar item is created.
-     * @return
-     *      toolbar button
-     * @param key
-     *      key of toolbar button
-     */
-    public Component createTool(String key) {
-    	return createToolbarButton(key);
     }
 
     /**
@@ -108,10 +92,9 @@ public class ResourceAutomation
      * @return
      *      JBUtton
      */
-    public JButton createToolbarButton(String key) 
+    private JButton createToolbarButton(String key)
     {
-    	URL url = getResource(key + imageSuffix);
-        JButton button = new JButton(new ImageIcon(url)) {
+        JButton button = new JButton(getImageResource(key + imageSuffix)) {
 			public float getAlignmentY() {
                 return 0.5f;
             }
@@ -124,7 +107,7 @@ public class ResourceAutomation
 		if (actionString == null) {
 		    actionString = key;
 		}
-		Action action = getAction(actionString);
+        Action action = commands.get(actionString);
 		if (action != null) {
 		    button.setActionCommand(actionString);
 		    button.addActionListener(action);
@@ -140,6 +123,19 @@ public class ResourceAutomation
 	  	return button;
     }
 
+    public ImageIcon getImageResource(String key) {
+        String filename = getResourceString(key);
+        if (filename == null) return null;
+        final File file = new File(imageDirectory + File.separator + filename);
+        if (!file.exists()) return null;
+        try {
+            return new ImageIcon(file.toURL());
+        } catch (MalformedURLException ignored) {
+            ignored.printStackTrace();
+            return null;
+        }
+    }
+
 
     /**
      * Take the given string and chop it up into a series
@@ -147,8 +143,7 @@ public class ResourceAutomation
      * for trying to get an array of strings out of the
      * resource file.
      */
-    public String[] tokenize(String input) 
-    {
+    private String[] tokenize(String input) {
 		Vector<String> v = new Vector<String>();
 		StringTokenizer t = new StringTokenizer(input);
 		String cmd[];
@@ -166,41 +161,30 @@ public class ResourceAutomation
 		return cmd;
     }
 
-    public static String getResourceString(String nm) 
-    {
+    public static String getResourceString(String nm) {
     	String str;
-    	try 
-    	{
+    	try {
     	    str = ResourceAutomation.resources.getString(nm);
-    	} 
-    	catch (MissingResourceException mre) 
-    	{
+    	} catch (MissingResourceException mre) {
     	    str = null;
     	}
     	return str;
     }
 
 
-    public Action getAction(String cmd) {
-    	return commands.get(cmd);
-    }
-
-    public URL getResource(String key) 
+    public URL getResource(String key)
     {
 		String name = getResourceString(key);
-		if (name != null) 
-		{
+		if (name != null) {
 			return getClass().getResource(name);
 		}
 		return null;
     }
-    public Container getToolbar() 
-    {
+    public Container getToolbar() {
     	return toolbar;
     }
 
-    public JMenuBar createMenubar()
-    {
+    public JMenuBar createMenubar() {
     	JMenuBar mb = new JMenuBar();
 
     	String[] menuKeys = tokenize(getResourceString("menubar"));
@@ -315,7 +299,7 @@ public class ResourceAutomation
 		    astr = cmd;
 		}
 		mi.setActionCommand(astr);
-		Action a = getAction(astr);
+        Action a = commands.get(astr);
 		if (a != null) 
 		{
 		    mi.addActionListener(a);
@@ -330,10 +314,10 @@ public class ResourceAutomation
 		return mi;
     }
     // Yarked from JMenu, ideally this would be public.
-    protected PropertyChangeListener createActionChangeListener(JMenuItem b) 
-    {
+    protected PropertyChangeListener createActionChangeListener(JMenuItem b) {
     	return new ActionChangedListener(b);
     }
+    
     // Yarked from JMenu, ideally this would be public.
     private class ActionChangedListener implements PropertyChangeListener {
         JMenuItem menuItem;
@@ -361,8 +345,7 @@ public class ResourceAutomation
     }
 
 
-	public void createCommandTable(Action[] actions)
-	{
+	public void createCommandTable(Action[] actions) {
 		// install the command table
     	commands = new Hashtable<String, Action>();
 		for (Action action : actions) {

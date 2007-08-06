@@ -228,7 +228,7 @@ public final class TimeToolWindow extends JPanel implements Observer
 			frame.getContentPane().add("Center", this);
 		    frame.setJMenuBar(resources.getMenubar());
 			frame.addWindowListener(new WindowEventHandler(controller));
-			frame.setIconImage(new ImageIcon(resources.getResource("IconImage")).getImage());
+			frame.setIconImage(resources.getImageResource("IconImage").getImage());
 			frame.pack();
 			frame.setSize(500, 300);
 
@@ -282,9 +282,8 @@ public final class TimeToolWindow extends JPanel implements Observer
 		try
 		{
 			WindowsTrayIcon.initTrayIcon(ResourceAutomation.getResourceString("Title"));
-			String imageString = ResourceAutomation.getResourceString("TrayIconImage"); 
-			Image image = Toolkit.getDefaultToolkit().getImage(imageString);
-			trayIcon = new WindowsTrayIcon(image, 16, 16);
+            final ImageIcon trayImage = resources.getImageResource("TrayIconImage");
+            trayIcon = new WindowsTrayIcon(trayImage.getImage(), 16, 16);
 			trayIcon.setToolTipText(ResourceAutomation.getResourceString("Title"));
 			trayIcon.addActionListener(new RestoreListener());
 		}

@@ -10,13 +10,14 @@ import static java.awt.GridBagConstraints.NONE;
 import static java.awt.GridBagConstraints.NORTHWEST;
 import static java.awt.GridBagConstraints.SOUTHEAST;
 import java.text.NumberFormat;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+import java.io.File;
+import java.io.FileFilter;
 
 
 public class GeneralOptions implements OptionsPlugin {
     private JTextField autosaveField;
     private Component parent;
+    private JComboBox skinField;
 
     public JPanel configurationOptions(CommonDialog parent) {
 
@@ -27,11 +28,24 @@ public class GeneralOptions implements OptionsPlugin {
         autosaveField.setText(String.valueOf(options.getAutosave()));
         autosaveField.setColumns(5);
 
+        final JLabel skinLabel = new JLabel("Look and Feel");
+        skinField = new JComboBox(options.getAvailableSkins()); 
+        skinField.setSelectedItem(options.getSkin());
+        skinField.setRenderer(new DefaultListCellRenderer(){
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+             {
+                 final File file = (File)value;
+                 return super.getListCellRendererComponent(list, file.getName(), index, isSelected, cellHasFocus); 
+             }
+        });
+
         final JPanel panel = new JPanel(new GridBagLayout());
 
         panel.add(autosaveLabel,	   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
         panel.add(autosaveField,	   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, NORTHWEST, NONE, new Insets(2,2,2,2), 0, 0));
-        panel.add(parent.getButtons(), new GridBagConstraints(1, 1, 1, 1, 0.0, 1.0, SOUTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+        panel.add(skinLabel,	       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+        panel.add(skinField,	       new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, NORTHWEST, NONE, new Insets(2,2,2,2), 0, 0));
+        panel.add(parent.getButtons(), new GridBagConstraints(1, 2, 1, 1, 0.0, 1.0, SOUTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
 
         return panel;
     }
@@ -45,6 +59,7 @@ public class GeneralOptions implements OptionsPlugin {
 
         try {
             final TimeToolPreferences options = new TimeToolPreferences();
+            options.setSkin((File)skinField.getSelectedItem());
             options.setAutosave(Long.valueOf(value));
             options.serialize();
         } catch (NumberFormatException e) {
@@ -67,4 +82,5 @@ public class GeneralOptions implements OptionsPlugin {
     public String getSelectedDescription() {
         throw new UnsupportedOperationException("method not implemented");
     }
+
 }

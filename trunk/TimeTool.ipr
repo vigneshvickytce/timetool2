@@ -275,17 +275,7 @@
       </value>
     </option>
   </component>
-  <component name="libraryTable">
-    <library name="junit-4.1">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../junit4.1/junit-4.1.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../junit4.1/junit-4.1-src.jar!/" />
-      </SOURCES>
-    </library>
-  </component>
+  <component name="libraryTable" />
   <component name="uidesigner-configuration">
     <option name="INSTRUMENT_CLASSES" value="true" />
     <option name="COPY_FORMS_RUNTIME_TO_OUTPUT" value="true" />
