@@ -58,7 +58,7 @@ public class StatusBar extends JComponent implements Observer
 	}
 
     private JLabel createSaveNotification(ResourceAutomation resources) {
-        JLabel label = new JLabel(new ImageIcon(resources.getResource("saveImage")));
+        JLabel label = new JLabel(resources.getImageResource("saveImage"));
         label.setVisible(false);
         return label;
     }

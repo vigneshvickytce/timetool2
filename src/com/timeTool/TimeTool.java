@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledFuture;
+import java.io.File;
 
 import javax.swing.*;
 
@@ -23,7 +24,7 @@ public class TimeTool extends Observable
 	private Date currentTime;
 	private Date startTime; 
 	private int currentRow;
-    private final ResourceAutomation resources  = new ResourceAutomation();
+    private ResourceAutomation resources;
 	private static TimeToolWindow timeToolWindow;
     public static final String EVENT_SAVED_BY_USER = "USER_SAVE";
     private ScheduledExecutorService jobExecutor;
@@ -35,8 +36,11 @@ public class TimeTool extends Observable
 		setStartTime(null);
 
         jobExecutor = Executors.newScheduledThreadPool(2);
+
+        final TimeToolPreferences options = new TimeToolPreferences();
+        resources  = new ResourceAutomation(options.getSkin());
         startTimerJob();
-        startAutoSaveJob();
+        startAutoSaveJob(options);
     }
 
     private void startTimerJob() {
@@ -47,8 +51,7 @@ public class TimeTool extends Observable
         }, 1L, 1L, TimeUnit.SECONDS);
     }
 
-    private void startAutoSaveJob() {
-        final TimeToolPreferences options = new TimeToolPreferences();
+    private void startAutoSaveJob(TimeToolPreferences options) {
         long interval = options.getAutosave();
         if (autoSaveJob != null) {
             autoSaveJob.cancel(false); 
@@ -445,9 +448,23 @@ public class TimeTool extends Observable
 	}
 	public void options()
 	{
-		OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame());
-		dialog.setVisible(true);
-        startAutoSaveJob();
+        final File originalSkin = new TimeToolPreferences().getSkin();
+        OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame());
+        dialog.setVisible(true);
+        final TimeToolPreferences newPrefs = new TimeToolPreferences();
+        if (!originalSkin.equals(newPrefs.getSkin())) {
+            saveTaskList();
+
+            final JFrame frame = timeToolWindow.getFrame();
+            final Point origLocation = frame.getLocation();
+            frame.setVisible(false);
+            frame.dispose();
+            resources = new ResourceAutomation(newPrefs.getSkin());
+            timeToolWindow = new TimeToolWindow(resources, this);
+            timeToolWindow.show();
+            timeToolWindow.getFrame().setLocation(origLocation);
+        }
+        startAutoSaveJob(newPrefs);
     }
 
 	public static void main(String[] args)
