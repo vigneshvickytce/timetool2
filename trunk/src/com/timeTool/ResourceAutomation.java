@@ -1,7 +1,5 @@
 package com.timeTool;
 
-import com.timeTool.ErrorHandler;
-
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Event;
@@ -9,15 +7,15 @@ import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URL;
+import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import java.io.File;
 
 import javax.swing.Action;
 import javax.swing.Box;

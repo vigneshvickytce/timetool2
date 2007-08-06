@@ -1,19 +1,26 @@
 package com.timeTool;
 
-import com.timeTool.ui.*;
-import com.timeTool.ResourceAutomation;
+import com.timeTool.ui.AddTaskDialog;
+import com.timeTool.ui.AdjustTimeDialog;
+import com.timeTool.ui.OptionsDialog;
+import com.timeTool.ui.RenameDialog;
+import com.timeTool.ui.TimeToolWindow;
 
-import java.awt.*;
+import java.awt.FileDialog;
+import java.awt.Point;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Observable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledFuture;
-import java.io.File;
+import java.util.concurrent.TimeUnit;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 
 
 public class TimeTool extends Observable
@@ -437,15 +444,13 @@ public class TimeTool extends Observable
     }
 	private Integer getMinutesFromAdjustString(String adjustment) throws Exception
 	{
-		try
-		{
+		try {
 			return new Integer(adjustment);
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
             throw new Exception(ResourceAutomation.getResourceString("NumericOnly"));
 		}
 	}
+	
 	public void options()
 	{
         final File originalSkin = new TimeToolPreferences().getSkin();
@@ -459,7 +464,8 @@ public class TimeTool extends Observable
             final Point origLocation = frame.getLocation();
             frame.setVisible(false);
             frame.dispose();
-            resources = new ResourceAutomation(newPrefs.getSkin());
+			deleteObservers();
+			resources = new ResourceAutomation(newPrefs.getSkin());
             timeToolWindow = new TimeToolWindow(resources, this);
             timeToolWindow.show();
             timeToolWindow.getFrame().setLocation(origLocation);
