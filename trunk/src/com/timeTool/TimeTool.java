@@ -442,17 +442,15 @@ public class TimeTool extends Observable
 	    	notifyObservers(); 
 		}
     }
-	private Integer getMinutesFromAdjustString(String adjustment) throws Exception
-	{
+	private Integer getMinutesFromAdjustString(String adjustment) throws Exception {
 		try {
 			return new Integer(adjustment);
 		} catch (Exception e) {
             throw new Exception(ResourceAutomation.getResourceString("NumericOnly"));
 		}
 	}
-	
-	public void options()
-	{
+
+	public void options() {
         final File originalSkin = new TimeToolPreferences().getSkin();
         OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame());
         dialog.setVisible(true);
