@@ -1,24 +1,26 @@
 package com.timeTool.ui;
 
-import com.timeTool.TimeTool;
 import com.timeTool.ResourceAutomation;
+import com.timeTool.Task;
+import com.timeTool.TimeTool;
+import com.timeTool.TimeTool.TimeToolListener;
 
+import java.awt.GridBagConstraints;
+import static java.awt.GridBagConstraints.*;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.awt.*;
-import static java.awt.GridBagConstraints.NORTHEAST;
-import static java.awt.GridBagConstraints.NONE;
-import static java.awt.GridBagConstraints.*;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import javax.swing.plaf.basic.BasicBorders;
 
-public class StatusBar extends JComponent implements Observer
+public class StatusBar extends JComponent
 {
 	private JLabel dayOfWeek;
 	private JLabel time;
@@ -29,7 +31,6 @@ public class StatusBar extends JComponent implements Observer
 	private final TimeTool controller;
     private JLabel saveLabel;
     private final Executor executor;
-
 
     public StatusBar(TimeTool controller, ResourceAutomation resources) {
 		super();
@@ -54,7 +55,7 @@ public class StatusBar extends JComponent implements Observer
         add(hourTotal,  new GridBagConstraints(5, 0, 1, 1, 1.0, 0.0, WEST, NONE, new Insets(1,1,1,1), 0, 0));
         add(saveLabel,  new GridBagConstraints(6, 0, 1, 1, 1.0, 0.0, EAST, NONE, new Insets(1,1,1,1), 0, 0));
 
-        controller.addObserver(this);
+		controller.addListener(new MyTimeToolListener());
 	}
 
     private JLabel createSaveNotification(ResourceAutomation resources) {
@@ -69,34 +70,53 @@ public class StatusBar extends JComponent implements Observer
         return label; 
     }
 
-    public void update(Observable arg0, Object arg1){
-        if (arg1 == TimeTool.EVENT_SAVED_BY_USER) {
-            saveLabel.setVisible(true);
-           executor.execute(new Runnable() {
-                public void run() {
-                    try {
-                        Thread.sleep(600L);
-                    } catch (InterruptedException ignored) {
-                        //ignored
-                    }
-                    saveLabel.setVisible(false);
-                }
-            });
-        } else {
-            Date currentTime = controller.getTime();
+	private final class MyTimeToolListener extends TimeToolListener {
+		@Override
+		public void onSave() {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					saveLabel.setVisible(true);
+				}
+			});
+			executor.execute(new Runnable() {
+				public void run() {
+					try {
+						Thread.sleep(600L);
+					} catch (InterruptedException ignored) {
+						//ignored
+					}
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							saveLabel.setVisible(false);
+						}
+					});
+				}
+			});
+		}
 
-            time.setText(DateFormat.getTimeInstance().format(currentTime));
-            date.setText(DateFormat.getDateInstance().format(currentTime));
 
-            SimpleDateFormat df = new SimpleDateFormat("E");
-            dayOfWeek.setText(df.format(currentTime));
+		@Override
+		public void onTaskChange(Task unused) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					{
+						Date currentTime = controller.getTime();
+						if (currentTime != null) {
+							time.setText(DateFormat.getTimeInstance().format(currentTime));
+							date.setText(DateFormat.getDateInstance().format(currentTime));
 
-            minuteTotal.setText(controller.getTotalMinutes());
+							SimpleDateFormat df = new SimpleDateFormat("E");
+							dayOfWeek.setText(df.format(currentTime));
 
-            hourTotal.setText(controller.getTotalHours());
+							minuteTotal.setText(controller.getTotalMinutes());
 
-            task.setText(controller.getCurrentTask());
-        }
-    }
+							hourTotal.setText(controller.getTotalHours());
 
+							task.setText(controller.getCurrentTask());
+						}
+					}
+				}
+			});
+		}
+	}
 }

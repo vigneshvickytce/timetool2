@@ -6,6 +6,7 @@ import com.timeTool.ResourceAutomation;
 import com.timeTool.Task;
 import com.timeTool.TimePersistence;
 import com.timeTool.TimeTool;
+import com.timeTool.TimeTool.TimeToolListener;
 import com.timeTool.actions.AboutAction;
 import com.timeTool.actions.AddAction;
 import com.timeTool.actions.AdjustAction;
@@ -33,8 +34,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -47,12 +46,13 @@ import javax.swing.JTable;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.JTableHeader;
 
-public final class TimeToolWindow extends JPanel implements Observer
+public final class TimeToolWindow extends JPanel
 {
 	private JTable taskList;
     private TaskTable dataTable;
@@ -97,7 +97,8 @@ public final class TimeToolWindow extends JPanel implements Observer
 
 		createTrayIcon();
 		createKeyHandler(controller);
-		controller.addObserver(this);
+		controller.addListener(new TrayListener());
+		controller.addListener(new TableListener());
 	}
 
 	private void setLookAndFeel()
@@ -191,7 +192,7 @@ public final class TimeToolWindow extends JPanel implements Observer
 		taskList.setColumnSelectionAllowed(false); 
     	taskList.setShowVerticalLines(false); 
     	taskList.setShowHorizontalLines(false);
-		trapTableClick(controller);
+		trapTableClick();
     	trapColumnClick(); 
 	}
 	
@@ -201,29 +202,27 @@ public final class TimeToolWindow extends JPanel implements Observer
 	    header.addMouseListener(new ColumnHeaderListener(controller));
 	}
 	
-	private void trapTableClick(final TimeTool controller)
+	private void trapTableClick()
 	{
 		//Ask to be notified of selection changes.
     	ListSelectionModel rowSM = taskList.getSelectionModel();
     	rowSM.addListSelectionListener(new ListSelectionListener() 
     	{
-			public void valueChanged(ListSelectionEvent arg0)
+			public void valueChanged(ListSelectionEvent event)
 			{
 				//Ignore extra messages.
-    	        if (arg0.getValueIsAdjusting()) return;
+    	        if (event.getValueIsAdjusting()) return;
 
-    	        ListSelectionModel lsm = (ListSelectionModel)arg0.getSource();
-    	        if (!lsm.isSelectionEmpty())
-    	        {
-    	            int selectedRow = lsm.getMinSelectionIndex();
+    	        ListSelectionModel model = (ListSelectionModel)event.getSource();
+    	        if (!model.isSelectionEmpty()) {
+    	            int selectedRow = model.getMinSelectionIndex();
 					controller.setCurrentRow(selectedRow);
     	        }
     	    }
     	});
 	}
 
-	public JFrame getFrame()
-	{
+	public JFrame getFrame() {
 		return frame; 
 	}
 
@@ -264,45 +263,7 @@ public final class TimeToolWindow extends JPanel implements Observer
     }
 
 
-	public void update(Observable arg0, Object arg1)
-	{
-    	taskList.repaint(); 
-    	int currentRow = controller.getCurrentRow();
-    	if (currentRow == TimeTool.NO_ROW_SELECTED) {
-    		taskList.clearSelection();
-		} else {
-			final ImageIcon trayImage = resources.getImageResource("TrayIconImage");
-            String title = ResourceAutomation.getResourceString("Title");
-            final Task currentTask = controller.get(currentRow);
-            final String hoursLabel = ResourceAutomation.getResourceString("GridHourHeader");
-            trayIcon.setToolTipText(
-                    title + "\n" +
-                    controller.getTotalHours() + " " + hoursLabel + "\n" +
-                    currentTask.getId() + " " + currentTask.getHours() + " " + hoursLabel);
-
-            taskList.changeSelection(currentRow,
-                    1,
-                    false,
-                    false);
-    	}
-
-		final ImageIcon trayImage;
-		if (currentRow == TimeTool.NO_ROW_SELECTED) {
-			trayImage = resources.getImageResource("TrayIconImageStopped");
-		} else {
-			trayImage = resources.getImageResource("TrayIconImage");
-    	}
-		try {
-			trayIcon.setImage(trayImage.getImage(), 16, 16);
-		} catch (Exception t) {
-			ErrorHandler.showError(frame, new Exception(t));
-            System.out.println(ResourceAutomation.getResourceString("UncaughtException") + t);
-            t.printStackTrace();
-        	WindowsTrayIcon.cleanUp();
-		}
-	}
-	
-	private void createTrayIcon() 
+	private void createTrayIcon()
 	{
 		try
 		{
@@ -322,11 +283,15 @@ public final class TimeToolWindow extends JPanel implements Observer
 	private class RestoreListener implements ActionListener 
 	{
 		public void actionPerformed(ActionEvent evt) {
-            frame.setState(Frame.NORMAL);
-            frame.setVisible(true);
-            frame.toFront();
-            frame.requestFocus();
-			trayIcon.setVisible(false);
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					frame.setState(Frame.NORMAL);
+					frame.setVisible(true);
+					frame.toFront();
+					frame.requestFocus();
+					trayIcon.setVisible(false);
+				}
+			});
         }
     }
 
@@ -350,12 +315,76 @@ public final class TimeToolWindow extends JPanel implements Observer
         {
 			String osName = System.getProperty("os.name");
 			if ((osName.startsWith("Windows")) || osName.startsWith("Mac OS")) {
-				frame.setVisible(false);
-				trayIcon.setVisible(true);
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						frame.setVisible(false);
+						trayIcon.setVisible(true);
+					}
+				});
             }
         }
 
     }
 
+	private final class TrayListener extends TimeToolListener {
+		private final ImageIcon trayImageStopped = resources.getImageResource("TrayIconImageStopped");
+		private final ImageIcon trayImageRunning = resources.getImageResource("TrayIconImage");
 
+		@Override
+		public void onTaskChange(Task task) {
+			setIconImage(trayImageRunning);
+		}
+
+		private void setIconImage(ImageIcon image) {
+			try {
+				trayIcon.setImage(image.getImage(), 16, 16);
+			} catch (Exception t) {
+				ErrorHandler.showError(frame, new Exception(t));
+				System.out.println(ResourceAutomation.getResourceString("UncaughtException") + t);
+				t.printStackTrace();
+				WindowsTrayIcon.cleanUp();
+			}
+		}
+
+
+		@Override
+		public void onTimerStopped() {
+			setIconImage(trayImageStopped);
+		}
+	}
+
+	private final class TableListener extends TimeToolListener {
+		private final String title = ResourceAutomation.getResourceString("Title");
+		private final String hoursLabel = ResourceAutomation.getResourceString("GridHourHeader");
+
+
+		@Override
+		public void onTimerStopped() {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					taskList.repaint();
+					taskList.clearSelection();
+				}
+			});
+		}
+
+
+		@Override
+		public void onTaskChange(final Task task) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					taskList.repaint();
+					trayIcon.setToolTipText(
+						title + "\n" +
+							controller.getTotalHours() + " " + hoursLabel + "\n" +
+							task.getId() + " " + task.getHours() + " " + hoursLabel);
+
+					taskList.changeSelection(controller.getCurrentRow(),
+						1,
+						false,
+						false);
+				}
+			});
+		}
+	}
 }
