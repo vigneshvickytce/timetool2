@@ -196,9 +196,7 @@ public class TimeTool {
 	}
 
 
-    private void calculateMinutes()
-
-    {
+    private void calculateMinutes() {
     	if (currentRow != NO_ROW_SELECTED)
     	{
 	    	if ((currentTime != null) && (getTimerStartTime() != null))
@@ -208,7 +206,6 @@ public class TimeTool {
 	    		long secondDifference = currentTime.getTime() - getTimerStartTime().getTime();
 	    		secondDifference = secondDifference / 1000;
 	    		task.addSeconds(secondDifference);
-	    		rows.set(currentRow, task);
 	    		setStartTime(currentTime);
 	    	}
     	}
@@ -371,8 +368,8 @@ public class TimeTool {
 			listeners.clear();
 			resources = new ResourceAutomation(newPrefs.getSkin());
             timeToolWindow = new TimeToolWindow(resources, this);
-            timeToolWindow.show();
-            timeToolWindow.getFrame().setLocation(origLocation);
+			timeToolWindow.getFrame().setLocation(origLocation);
+			timeToolWindow.getFrame().setVisible(true);
         }
         startAutoSaveJob(newPrefs);
     }
@@ -515,8 +512,6 @@ public class TimeTool {
 				listener.onTaskChange(get(currentRow));
 			}
     	}
-
-
     }
 
 	public void setStartTime(Date startTime) {
@@ -568,7 +563,6 @@ public class TimeTool {
 
     private void tick() {
 		if (currentRow != NO_ROW_SELECTED) {
-			System.out.print("*"); 
 			currentTime = new Date();
 			calculateMinutes();
 			for (TimeToolListener listener : listeners) {

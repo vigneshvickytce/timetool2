@@ -24,9 +24,9 @@ public class StatusBar extends JComponent
 {
 	private JLabel dayOfWeek;
 	private JLabel time;
-	private JLabel date; 
-	private JLabel task; 
-	private JLabel minuteTotal; 
+	private JLabel date;
+	private JLabel task;
+	private JLabel minuteTotal;
 	private JLabel hourTotal;
 	private final TimeTool controller;
     private JLabel saveLabel;
@@ -39,10 +39,10 @@ public class StatusBar extends JComponent
         executor = Executors.newSingleThreadExecutor();
         setLayout(new GridBagLayout());
 
-        time = createLabel(); 
+        time = createLabel();
         dayOfWeek = createLabel();
-        date = createLabel(); 
-        task = createLabel(); 
+        date = createLabel();
+        task = createLabel();
         minuteTotal = createLabel();
         hourTotal = createLabel();
         saveLabel = createSaveNotification(resources);
@@ -67,7 +67,7 @@ public class StatusBar extends JComponent
     private JLabel createLabel() {
 		JLabel label = new JLabel();
 		label.setBorder(BasicBorders.getTextFieldBorder());
-        return label; 
+        return label;
     }
 
 	private final class MyTimeToolListener extends TimeToolListener {
@@ -100,19 +100,23 @@ public class StatusBar extends JComponent
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					{
-						Date currentTime = controller.getTime();
-						if (currentTime != null) {
-							time.setText(DateFormat.getTimeInstance().format(currentTime));
-							date.setText(DateFormat.getDateInstance().format(currentTime));
+						try {
+							Date currentTime = controller.getTime();
+							if (currentTime != null) {
+								time.setText(DateFormat.getTimeInstance().format(currentTime));
+								date.setText(DateFormat.getDateInstance().format(currentTime));
 
-							SimpleDateFormat df = new SimpleDateFormat("E");
-							dayOfWeek.setText(df.format(currentTime));
+								SimpleDateFormat df = new SimpleDateFormat("E");
+								dayOfWeek.setText(df.format(currentTime));
 
-							minuteTotal.setText(controller.getTotalMinutes());
+								minuteTotal.setText(controller.getTotalMinutes());
 
-							hourTotal.setText(controller.getTotalHours());
+								hourTotal.setText(controller.getTotalHours());
 
-							task.setText(controller.getCurrentTask());
+								task.setText(controller.getCurrentTask());
+							}
+						} catch (Throwable ex) {
+							ex.printStackTrace();
 						}
 					}
 				}

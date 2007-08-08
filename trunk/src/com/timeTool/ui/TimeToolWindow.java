@@ -61,7 +61,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public final class TimeToolWindow extends JPanel
+public final class TimeToolWindow
 {
 
 	private static JFrame frame;
@@ -77,9 +77,22 @@ public final class TimeToolWindow extends JPanel
 	private final Color tableHeaderBackgroundColor;
 	private final Color tableHeaderForegroundColor;
 	private JTable taskList;
+	private JPanel myPanel = new JPanel(true) {
+		// Overrides parent
+
+		public void paintComponent(Graphics g1) {
+			if ((frameBackgroundColor == null) || (tableBackgroundColor == null)) {
+				super.paintComponent(g1);
+			} else {
+				Graphics2D g2 = (Graphics2D) g1;
+				g2.setPaint(new GradientPaint(0, 0, frameBackgroundColor, 0, getHeight(), tableBackgroundColor));
+				g2.fillRect(0, 0, getWidth(), getHeight());
+				super.paintComponent(g2);
+			}
+		}
+	};
 
 	public TimeToolWindow(ResourceAutomation resources, TimeTool controller) {
-		super(true);
 
 		setLookAndFeel();
 		this.resources = resources;
@@ -128,7 +141,7 @@ public final class TimeToolWindow extends JPanel
 
 		char[] numericKeys = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 		for (final char key : numericKeys) {
-			registerKeyboardAction(new ActionListener(){
+			myPanel.registerKeyboardAction(new ActionListener(){
 
 				public void actionPerformed(ActionEvent e) {
 					adjustTimeKeyHandler.perform(key);
@@ -138,7 +151,7 @@ public final class TimeToolWindow extends JPanel
 
 		char[] adjustKeys = new char[]{'+', '-'};
 		for (final char key : adjustKeys) {
-			registerKeyboardAction(new ActionListener(){
+			myPanel.registerKeyboardAction(new ActionListener(){
 
 				public void actionPerformed(ActionEvent e) {
 					try {
@@ -154,14 +167,14 @@ public final class TimeToolWindow extends JPanel
 			}, KeyStroke.getKeyStroke(key), JComponent.WHEN_IN_FOCUSED_WINDOW);
 		}
 
-		registerKeyboardAction(new ActionListener(){
+		myPanel.registerKeyboardAction(new ActionListener(){
 
 				public void actionPerformed(ActionEvent e) {
 					int row = controller.getCurrentRow();
 					controller.setCurrentRow(--row);
 				}
 			}, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-		registerKeyboardAction(new ActionListener(){
+		myPanel.registerKeyboardAction(new ActionListener(){
 
 				public void actionPerformed(ActionEvent e) {
 					int row = controller.getCurrentRow();
@@ -250,30 +263,17 @@ public final class TimeToolWindow extends JPanel
 
 
 	private void initPanel(JScrollPane scroller) {
-		setOpaque(false);
+		myPanel.setOpaque(false);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add("North",resources.createToolbar());
 		panel.add("Center", scroller);
-		add("Center", panel);
+		myPanel.add("Center", panel);
 		StatusBar statusBar = new StatusBar(controller, resources);
-		add("South", statusBar);
+		myPanel.add("South", statusBar);
 	}
 
-
-	// Overrides parent
-
-	public void paintComponent(Graphics g1) {
-		if ((frameBackgroundColor == null) || (tableBackgroundColor == null)) {
-			super.paintComponent(g1);
-		} else {
-			Graphics2D g2 = (Graphics2D) g1;
-			g2.setPaint(new GradientPaint(0, 0, frameBackgroundColor, 0, getHeight(), tableBackgroundColor));
-			g2.fillRect(0, 0, getWidth(), getHeight());
-			super.paintComponent(g2);
-		}
-	}
 
 	private void setColors(Container container, Color backgroundColor, Color foregroundColor) {
 		if (backgroundColor != null) container.setBackground(backgroundColor);
@@ -305,21 +305,18 @@ public final class TimeToolWindow extends JPanel
 			System.err.println("Error loading L&F: " + exc);
 			ErrorHandler.showError(null, exc, resources);
 		}
-		setBorder(BorderFactory.createEtchedBorder());
-		setLayout(new BorderLayout());
+		myPanel.setBorder(BorderFactory.createEtchedBorder());
+		myPanel.setLayout(new BorderLayout());
 	}
 
 
-	public void show()
-
-	{
-		try
-		{
+	public void show() {
+		try {
 
 			frame = new JFrame();
 			frame.setTitle(resources.getResourceString("Title"));
 			frame.getContentPane().setLayout(new BorderLayout());
-			frame.getContentPane().add("Center", this);
+			frame.getContentPane().add("Center", myPanel);
 			frame.setJMenuBar(resources.getMenubar());
 			frame.addWindowListener(new WindowEventHandler(controller));
 			frame.setIconImage(resources.getImageResource("IconImage").getImage());
@@ -332,9 +329,7 @@ public final class TimeToolWindow extends JPanel
 			frame.setSize(500, 300);
 
 			frame.setVisible(true);
-		}
-		catch (Throwable t)
-		{
+		} catch (Throwable t) {
 			ErrorHandler.showError(frame, new Exception(t), resources);
 			System.out.println(resources.getResourceString("UncaughtException") + t);
 			t.printStackTrace();
