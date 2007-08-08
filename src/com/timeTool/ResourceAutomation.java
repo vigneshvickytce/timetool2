@@ -1,5 +1,8 @@
 package com.timeTool;
 
+import com.timeTool.ui.GradientToolbar;
+
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Event;
@@ -8,11 +11,13 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -30,34 +35,39 @@ import javax.swing.KeyStroke;
 
 
 
-public class ResourceAutomation
-{
-    public static ResourceBundle resources;
+public class ResourceAutomation {
+    private ResourceBundle resources;
     private JToolBar toolbar;
     private Hashtable<String, JMenuItem> menuItems;
     private JMenuBar menubar;
-    private static Hashtable<String, Action> commands = new Hashtable<String, Action>();
+    private Hashtable<String, Action> commands = new Hashtable<String, Action>();
     
     public static final String imageSuffix = "Image";
     public static final String labelSuffix = "Label";
     public static final String actionSuffix = "Action";
     public static final String tipSuffix = "Tooltip";
     public static final String hotKeySuffix = "Hotkey";
-    private final File imageDirectory;
+    private final File skinDirectory;
+	private ResourceBundle proxy;
 
 
-    public ResourceAutomation(File imageDirectory) {
-    	super();
-        this.imageDirectory = imageDirectory;
-        menuItems = new Hashtable<String, JMenuItem>();
-        //init the resources
-        try {
-            resources = ResourceBundle.getBundle("com.timeTool.resources.TimeTool", Locale.getDefault());
-        } catch (MissingResourceException mre) {
-            ErrorHandler.showError(null, mre);
-            System.exit(1);
-        }
-    }
+	public ResourceAutomation(File skinDirectory) {
+		super();
+		this.skinDirectory = skinDirectory;
+		menuItems = new Hashtable<String, JMenuItem>();
+
+		//init the resources
+		try {
+			proxy = new PropertyResourceBundle(new FileInputStream(
+				new File(skinDirectory, "TimeTool.properties")
+			));
+
+			resources = ResourceBundle.getBundle("com.timeTool.resources.TimeTool", Locale.getDefault());
+		} catch (Exception mre) {
+			ErrorHandler.showError(null, mre, null);
+			System.exit(1);
+		}
+	}
 
     /**
      * Create the toolbar.  By default this reads the 
@@ -66,7 +76,20 @@ public class ResourceAutomation
      *      the toolbar component
      */
     public Component createToolbar() {
-		toolbar = new JToolBar();
+
+		final Color gradientStart = getColorResource("ToolbarGradientStart");
+		final Color gradientStop = getColorResource("ToolbarGradientStop");
+		if ((gradientStart != null) && (gradientStop != null)) {
+			toolbar = new GradientToolbar(gradientStart, gradientStop);
+		} else {
+			toolbar = new JToolBar();
+		}
+
+		final Color foregroundColor = getColorResource("ToolbarForegroundColor");
+		if (foregroundColor != null) {
+			toolbar.setForeground(foregroundColor);
+		}
+
 		String[] toolKeys = tokenize(getResourceString("toolbar"));
         for (String toolKey : toolKeys) {
             if (toolKey.equals("-")) {
@@ -79,7 +102,27 @@ public class ResourceAutomation
 		return toolbar;
     }
 
-    /**
+	public Color getColorResource(String key) {
+		String value;
+		try {
+			value = proxy.getString(key);
+		} catch (MissingResourceException ex) {
+			try {
+				value = resources.getString(key); 
+			} catch (MissingResourceException ex2) {
+				return null;
+			}
+		}
+
+		final String[] rgbValue = value.split(",");
+		return new Color(
+			Integer.valueOf(rgbValue[0].trim()),
+			Integer.valueOf(rgbValue[1].trim()),
+			Integer.valueOf(rgbValue[2].trim()));
+	}
+
+
+	/**
      * Create a button to go inside of the toolbar.  By default this
      * will load an image resource.  The image filename is relative to
      * the classpath (including the '.' directory if its a part of the
@@ -97,7 +140,8 @@ public class ResourceAutomation
                 return 0.5f;
             }
         };
-        button.setRequestFocusEnabled(false);
+		button.setOpaque(false);
+		button.setRequestFocusEnabled(false);
         button.setMargin(new Insets(1,1,1,1));
 
         String actionString = getResourceString(key + actionSuffix);
@@ -124,7 +168,7 @@ public class ResourceAutomation
     public ImageIcon getImageResource(String key) {
         String filename = getResourceString(key);
         if (filename == null) return null;
-        final File file = new File(imageDirectory + File.separator + filename);
+        final File file = new File(skinDirectory + File.separator + filename);
         if (!file.exists()) return null;
         try {
             return new ImageIcon(file.toURL());
@@ -159,10 +203,10 @@ public class ResourceAutomation
 		return cmd;
     }
 
-    public static String getResourceString(String nm) {
+    public String getResourceString(String nm) {
     	String str;
     	try {
-    	    str = ResourceAutomation.resources.getString(nm);
+    	    str = resources.getString(nm);
     	} catch (MissingResourceException mre) {
     	    str = null;
     	}

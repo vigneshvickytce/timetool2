@@ -19,18 +19,18 @@ public class RenameDialog extends CommonDialog
 	private String task;  
 	private String description;
 	
-	public RenameDialog(JFrame frame, String task, String description) 
+	public RenameDialog(JFrame frame, String task, String description, ResourceAutomation resources)
     {
-        super(frame, ResourceAutomation.getResourceString(RENAME_TITLE), true);
+        super(frame, resources.getResourceString(RENAME_TITLE), true, resources);
         
     	this.task = task;  
     	this.description = description;  
         
     	Container mainPane = getContentPane();
 
-        JLabel taskLabel = new JLabel(ResourceAutomation.getResourceString(TASK_ID_LABEL), SwingConstants.RIGHT);
+        JLabel taskLabel = new JLabel(resources.getResourceString(TASK_ID_LABEL), SwingConstants.RIGHT);
         taskField = new JTextField(task, 20);
-        JLabel descriptionLabel = new JLabel(ResourceAutomation.getResourceString(DESCRIPTION_LABEL), SwingConstants.RIGHT);
+        JLabel descriptionLabel = new JLabel(resources.getResourceString(DESCRIPTION_LABEL), SwingConstants.RIGHT);
         descriptionField = new JTextField(description, 20);
 
         mainPane.setLayout(new GridBagLayout());

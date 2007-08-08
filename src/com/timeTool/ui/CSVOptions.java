@@ -27,9 +27,9 @@ public class CSVOptions implements OptionsPlugin {
 
 	public JPanel configurationOptions(CommonDialog parent)
 	{
-		final JLabel delimiterLabel = new JLabel(ResourceAutomation.getResourceString(DELIMITER_LABEL));
-		final JLabel decimalLabel = new JLabel(ResourceAutomation.getResourceString(DECIMAL_LABEL));
-		final JLabel quoteLabel = new JLabel(ResourceAutomation.getResourceString(QUOTES_LABEL));
+		final JLabel delimiterLabel = new JLabel(parent.getResources().getResourceString(DELIMITER_LABEL));
+		final JLabel decimalLabel = new JLabel(parent.getResources().getResourceString(DECIMAL_LABEL));
+		final JLabel quoteLabel = new JLabel(parent.getResources().getResourceString(QUOTES_LABEL));
 
 		final TimeToolPreferences options = new TimeToolPreferences();
         delimiterField = new JTextField(options.getDelimiter(), 5);
@@ -58,9 +58,9 @@ public class CSVOptions implements OptionsPlugin {
 		options.serialize();
 	}
 
-	public String getOptionsTitle()
+	public String getOptionsTitle(ResourceAutomation resources)
 	{
-		return ResourceAutomation.getResourceString(CSVOPTIONS_TITLE_MESSAGE);
+		return resources.getResourceString(CSVOPTIONS_TITLE_MESSAGE);
 	}
 
 	public Boolean getEnabled()

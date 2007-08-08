@@ -14,7 +14,7 @@ public class TaskModelTest extends TestCase
 	{
 		super.setUp();
 		data = new TimeTool(); 
-		TimePersistence file = new TimePersistence(data);
+		TimePersistence file = new TimePersistence(data, null);
 		file.loadFile();
 	}
 

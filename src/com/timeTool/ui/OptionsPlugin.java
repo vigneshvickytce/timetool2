@@ -1,6 +1,8 @@
 
 package com.timeTool.ui;
 
+import com.timeTool.ResourceAutomation;
+
 import javax.swing.JPanel;
 
 public interface OptionsPlugin
@@ -12,7 +14,7 @@ public interface OptionsPlugin
 
 	void onOK() throws Exception;
 
-	String getOptionsTitle();
+	String getOptionsTitle(ResourceAutomation resources);
 	
 	Boolean getEnabled();
 

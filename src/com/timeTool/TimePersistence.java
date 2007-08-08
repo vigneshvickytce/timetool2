@@ -14,10 +14,12 @@ public class TimePersistence extends FilePersistence
 
 	private ExportVisitor formatter;
 	private final TimeTool controller;
+	private final ResourceAutomation resources;
 
 
-	public TimePersistence(TimeTool controller) {
+	public TimePersistence(TimeTool controller, ResourceAutomation resources) {
 		this.controller = controller;
+		this.resources = resources;
 	}
 
 
@@ -106,7 +108,7 @@ public class TimePersistence extends FilePersistence
 	}
     
     public void exportFile(String path) throws Exception {
-		formatter = new CSVVisitor();
+		formatter = new CSVVisitor(resources);
 		export(path);
 	}
 

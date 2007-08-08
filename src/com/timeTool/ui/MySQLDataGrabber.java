@@ -3,12 +3,12 @@ package com.timeTool.ui;
 import com.timeTool.ErrorHandler;
 import com.timeTool.ResourceAutomation;
 
+import java.awt.GridBagConstraints;
+import static java.awt.GridBagConstraints.*;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.*;
-import static java.awt.GridBagConstraints.NORTHEAST;
-import static java.awt.GridBagConstraints.NONE;
-import static java.awt.GridBagConstraints.SOUTHEAST;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -16,7 +16,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import javax.swing.*;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class MySQLDataGrabber implements OptionsPlugin
 {
@@ -166,7 +169,7 @@ public class MySQLDataGrabber implements OptionsPlugin
 	}
 
 
-	public String getOptionsTitle()
+	public String getOptionsTitle(ResourceAutomation resources)
 	{
 		return "MySQL Options";
 	}
@@ -181,9 +184,9 @@ public class MySQLDataGrabber implements OptionsPlugin
 	{
 		JPanel panel = new JPanel(new GridBagLayout());
 
-        JLabel taskLabel = new JLabel(ResourceAutomation.getResourceString(AddTaskDialog.TASK_LABEL), SwingConstants.RIGHT);
-        JLabel descriptionLabel = new JLabel(ResourceAutomation.getResourceString(AddTaskDialog.DESCRIPTION_LABEL), SwingConstants.RIGHT);
-        populateTaskDropDown();
+        JLabel taskLabel = new JLabel(parent.getResources().getResourceString(AddTaskDialog.TASK_LABEL), SwingConstants.RIGHT);
+        JLabel descriptionLabel = new JLabel(parent.getResources().getResourceString(AddTaskDialog.DESCRIPTION_LABEL), SwingConstants.RIGHT);
+        populateTaskDropDown(parent);
 		populateDescriptionDropDown();
 
         panel.setLayout(new GridBagLayout());
@@ -218,7 +221,7 @@ public class MySQLDataGrabber implements OptionsPlugin
 		}
 	}
 
-	private void populateTaskDropDown() throws Exception
+	private void populateTaskDropDown(final CommonDialog parent) throws Exception
 	{
 		taskField = new JComboBox();
 		ArrayList tasks = getTaskList();
@@ -233,13 +236,10 @@ public class MySQLDataGrabber implements OptionsPlugin
 				{
 					public void actionPerformed(ActionEvent arg0)
 					{
-						try
-						{
+						try {
 							populateDescriptionDropDown();
-						}
-						catch (Exception e)
-						{
-							ErrorHandler.showError(null, e);
+						} catch (Exception e) {
+							ErrorHandler.showError(null, e, parent.getResources());
 						}
 					}
 				});

@@ -41,16 +41,16 @@ public class TimeTool {
 	public static void main(String[] args)
 
 	{
+		TimeTool controller = new TimeTool();
 		try
 		{
-            TimeTool controller = new TimeTool();
             timeToolWindow = new TimeToolWindow(controller.resources, controller);
 			timeToolWindow.show();
 	    } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
 	    			e.getMessage(),
-	    			ResourceAutomation.getResourceString("GenericError"),
+	    			controller.resources.getResourceString("GenericError"),
 	    			JOptionPane.DEFAULT_OPTION);
 		}
 	}
@@ -71,8 +71,8 @@ public class TimeTool {
 	public void about() {
 		JOptionPane.showConfirmDialog(
 				timeToolWindow.getFrame(),
-				ResourceAutomation.getResourceString("AboutMessage"),
-				ResourceAutomation.getResourceString("AboutTitle"),
+				resources.getResourceString("AboutMessage"),
+				resources.getResourceString("AboutTitle"),
 				JOptionPane.DEFAULT_OPTION,
 				JOptionPane.PLAIN_MESSAGE,
 				new ImageIcon(resources.getResource("IconImage")));
@@ -98,7 +98,7 @@ public class TimeTool {
 	public void addTask() {
 		try
 		{
-			AddTaskDialog dialog = new AddTaskDialog(timeToolWindow.getFrame());
+			AddTaskDialog dialog = new AddTaskDialog(timeToolWindow.getFrame(), resources);
 			dialog.setVisible(true);
 			if (dialog.getResponse() == AddTaskDialog.OK)
 			{
@@ -112,7 +112,7 @@ public class TimeTool {
 		}
 		catch (Exception e)
 		{
-			ErrorHandler.showError(timeToolWindow.getFrame(), e);
+			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
 		}
 	}
 
@@ -166,16 +166,16 @@ public class TimeTool {
 	public void adjustTime(String initialValue)
 
 	{
-		if (getCurrentTask().equals(ResourceAutomation.getResourceString("NoActiveTask")))
+		if (getCurrentTask().equals(resources.getResourceString("NoActiveTask")))
 		{
 			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
-	    			ResourceAutomation.getResourceString("NoTaskSelected"),
-	    			ResourceAutomation.getResourceString("InformationTitle"),
+	    			resources.getResourceString("NoTaskSelected"),
+	    			resources.getResourceString("InformationTitle"),
 	    			JOptionPane.DEFAULT_OPTION);
 			return;
 		}
 
-        AdjustTimeDialog dialog = new AdjustTimeDialog(timeToolWindow.getFrame(), initialValue);
+        AdjustTimeDialog dialog = new AdjustTimeDialog(timeToolWindow.getFrame(), initialValue, resources);
         dialog.setVisible(true);
         dialog.dispose();
         String response = dialog.getResponse();
@@ -189,7 +189,7 @@ public class TimeTool {
 			{
 				JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
 		    			e.getMessage(),
-		    			ResourceAutomation.getResourceString("GenericError"),
+		    			resources.getResourceString("GenericError"),
 		    			JOptionPane.DEFAULT_OPTION);
 			}
 		}
@@ -237,7 +237,7 @@ public class TimeTool {
     public void exportTaskList()
 
     {
-    	TimePersistence data = new TimePersistence(this);
+    	TimePersistence data = new TimePersistence(this, resources);
     	FileDialog fileDialog = new FileDialog(timeToolWindow.getFrame(), "TimeTool - Export to CSV");
     	fileDialog.setMode(FileDialog.SAVE);
     	Date today = new Date();
@@ -253,7 +253,7 @@ public class TimeTool {
 		}
 		catch (Exception e)
 		{
-			ErrorHandler.showError(timeToolWindow.getFrame(), e);
+			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
 		}
     }
 
@@ -274,7 +274,7 @@ public class TimeTool {
     {
     	if (currentRow == NO_ROW_SELECTED)
     	{
-    		return ResourceAutomation.getResourceString("NoActiveTask");
+    		return resources.getResourceString("NoActiveTask");
     	}
     	Task row = rows.get(currentRow);
     	return row.getDescription();
@@ -292,7 +292,7 @@ public class TimeTool {
 		try {
 			return new Integer(adjustment);
 		} catch (Exception e) {
-            throw new Exception(ResourceAutomation.getResourceString("NumericOnly"));
+            throw new Exception(resources.getResourceString("NumericOnly"));
 		}
 	}
 
@@ -358,7 +358,7 @@ public class TimeTool {
 
 	public void options() {
         final File originalSkin = new TimeToolPreferences().getSkin();
-        OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame());
+        OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame(), resources);
         dialog.setVisible(true);
         final TimeToolPreferences newPrefs = new TimeToolPreferences();
         if (!originalSkin.equals(newPrefs.getSkin())) {
@@ -382,7 +382,7 @@ public class TimeTool {
 
     {
 		currentRow = NO_ROW_SELECTED;
-		TimePersistence data = new TimePersistence(this);
+		TimePersistence data = new TimePersistence(this, resources);
 		data.loadFile();
 		for (TimeToolListener listener : listeners) {
 			listener.onTimerStopped();
@@ -409,8 +409,8 @@ public class TimeTool {
 		{
 			int response =
 	    			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
-	    			ResourceAutomation.getResourceString("ConfirmDelete"),
-	    			ResourceAutomation.getResourceString("ConfirmDeleteTitle"),
+	    			resources.getResourceString("ConfirmDelete"),
+	    			resources.getResourceString("ConfirmDeleteTitle"),
 	    			JOptionPane.YES_NO_OPTION);
 	    	if (response == 0)
 	    	{
@@ -443,7 +443,7 @@ public class TimeTool {
 		if (currentRow > -1)
 		{
 			Task task = rows.get(currentRow);
-			RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription());
+			RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription(), resources);
 			dialog.setVisible(true);
 			if (dialog.getResponse() == RenameDialog.OK)
 			{
@@ -474,8 +474,8 @@ public class TimeTool {
 	{
 		int response =
 			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
-			ResourceAutomation.getResourceString("ConfirmReset"),
-			ResourceAutomation.getResourceString("ConfirmResetTitle"),
+			resources.getResourceString("ConfirmReset"),
+			resources.getResourceString("ConfirmResetTitle"),
 			JOptionPane.YES_NO_OPTION);
 
 		if (response == 0)
@@ -488,14 +488,14 @@ public class TimeTool {
     public void saveTaskList()
 
     {
-    	TimePersistence data = new TimePersistence(this);
+    	TimePersistence data = new TimePersistence(this, resources);
 		try {
 			data.saveFile(TXTVisitor.DATA_FILE);
 			for (TimeToolListener listener : listeners) {
 				listener.onSave();
 			}
         } catch (Exception e) {
-			ErrorHandler.showError(timeToolWindow.getFrame(), e);
+			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
 		}
     }
 
@@ -568,6 +568,7 @@ public class TimeTool {
 
     private void tick() {
 		if (currentRow != NO_ROW_SELECTED) {
+			System.out.print("*"); 
 			currentTime = new Date();
 			calculateMinutes();
 			for (TimeToolListener listener : listeners) {

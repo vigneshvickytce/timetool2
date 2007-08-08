@@ -3,7 +3,6 @@ package com.timeTool.test;
 import com.timeTool.Task;
 import com.timeTool.TimeTool;
 import com.timeTool.TimePersistence;
-import com.timeTool.ResourceAutomation;
 
 import junit.framework.TestCase;
 
@@ -14,7 +13,7 @@ public class TimeToolTest extends TestCase
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		TimePersistence file = new TimePersistence(data);
+		TimePersistence file = new TimePersistence(data, null);
 		file.loadFile();
 		data.setCurrentRow(-1); 
 	}
@@ -76,15 +75,6 @@ public class TimeToolTest extends TestCase
 		assertEquals(10, data.getRowCount()); 		
 	}
 
-	 public void testRowSelection()
-	 {
-		 assertEquals(ResourceAutomation.getResourceString("NoActiveTask"), data.getCurrentTask());
-		 data.setCurrentRow(3); 
-		 assertEquals("Gap - Billed", data.getCurrentTask()); 
-		 data.setCurrentRow(TimeTool.NO_ROW_SELECTED); 
-		 assertEquals(ResourceAutomation.getResourceString("NoActiveTask"), data.getCurrentTask());
-		 data.setCurrentRow(-1); 
-	 }
 	 public void testAdjust()
 	 {
 		 try

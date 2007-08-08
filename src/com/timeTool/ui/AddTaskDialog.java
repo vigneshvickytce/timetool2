@@ -1,16 +1,17 @@
 package com.timeTool.ui;
 
-import com.timeTool.ui.CommonDialog;
-import com.timeTool.ui.OptionsPlugin;
-import com.timeTool.ui.PluginFactory;
 import com.timeTool.ResourceAutomation;
 
-import java.awt.*;
-import static java.awt.GridBagConstraints.SOUTHEAST;
-import static java.awt.GridBagConstraints.NONE;
-import static java.awt.GridBagConstraints.NORTHEAST;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import static java.awt.GridBagConstraints.*;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class AddTaskDialog extends CommonDialog {
 	public static final String DESCRIPTION_LABEL = "DescriptionLabelMessage";
@@ -22,8 +23,8 @@ public class AddTaskDialog extends CommonDialog {
 	private String description;
 	private OptionsPlugin activePlugin = null;
 	
-	public AddTaskDialog(JFrame frame) throws Exception {
-        super(frame, ResourceAutomation.getResourceString(ADD_A_TASK_WINDOW_TITLE), true);
+	public AddTaskDialog(JFrame frame, ResourceAutomation resources) throws Exception {
+        super(frame, resources.getResourceString(ADD_A_TASK_WINDOW_TITLE), true, resources);
         
         activePlugin = PluginFactory.getInstance().getActivePlugin();
 		Container mainPane = getContentPane(); 
@@ -33,9 +34,9 @@ public class AddTaskDialog extends CommonDialog {
 	    	task = "";  
 	    	description = "";
 
-            JLabel taskLabel = new JLabel(ResourceAutomation.getResourceString(TASK_LABEL), SwingConstants.RIGHT);
+            JLabel taskLabel = new JLabel(resources.getResourceString(TASK_LABEL), SwingConstants.RIGHT);
             taskField = new JTextField("", 20);
-            JLabel descriptionLabel = new JLabel(ResourceAutomation.getResourceString(DESCRIPTION_LABEL), SwingConstants.RIGHT);
+            JLabel descriptionLabel = new JLabel(resources.getResourceString(DESCRIPTION_LABEL), SwingConstants.RIGHT);
             descriptionField = new JTextField("", 20);
 
             mainPane.setLayout(new GridBagLayout());
