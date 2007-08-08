@@ -21,23 +21,20 @@ public class TaskTable extends AbstractTableModel
 			resources.getResourceString("GridHourHeader")};
 	}
 	
-	public String getColumnName(int column)
-	{
+	@Override
+	public String getColumnName(int column) {
 		return columns[column]; 	
 	}
 	
-	public int getRowCount()
-	{
+	public int getRowCount() {
 		return controller.getRowCount();
 	}
 
-	public int getColumnCount()
-	{
+	public int getColumnCount() {
 		return NUM_COLUMNS;
 	}
 
-	public Object getValueAt(int row, int col) 
-	{ 
+	public Object getValueAt(int row, int col) { 
 		return controller.getValueAt(row, col);  
 	}
 
