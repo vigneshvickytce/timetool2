@@ -18,7 +18,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -75,7 +74,7 @@ public class TimeTool {
 				resources.getResourceString("AboutTitle"),
 				JOptionPane.DEFAULT_OPTION,
 				JOptionPane.PLAIN_MESSAGE,
-				new ImageIcon(resources.getResource("IconImage")));
+				resources.getImageResource("IconImage"));
 	}
 
 	public void addListener(TimeToolListener listener) {
