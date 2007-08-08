@@ -34,7 +34,6 @@ public class AllTests
         suite.addTestSuite(AdjustTimeKeyHandlerTest.class);
         suite.addTestSuite(TimeToolTest.class);
 		suite.addTestSuite(TaskTest.class);
-		suite.addTestSuite(TestFileIO.class);
 		suite.addTestSuite(ExportOptionsTest.class);
 		suite.addTestSuite(TaskModelIteratorTest.class); 
 		return suite;

@@ -14,7 +14,7 @@ public class TaskModelIteratorTest extends TestCase
 	protected void setUp() throws Exception
 	{
 		super.setUp();
-		TimePersistence file = new TimePersistence(data);
+		TimePersistence file = new TimePersistence(data, null);
 		file.loadFile();
 	}
 

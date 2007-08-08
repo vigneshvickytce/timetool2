@@ -3,27 +3,18 @@ package com.timeTool.ui;
 import com.timeTool.ErrorHandler;
 import com.timeTool.ResourceAutomation;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 
 public abstract class CommonDialog extends JDialog
 {
@@ -35,11 +26,15 @@ public abstract class CommonDialog extends JDialog
 	private JButton buttonOK;
 	protected int response;
 	private JButton buttonCancel;
+	final ResourceAutomation resources;
+
+
 	protected abstract void onOK() throws Exception;
 	protected abstract void onCancel();
 
-	public CommonDialog(JFrame frame, String title, boolean modal) {
+	public CommonDialog(JFrame frame, String title, boolean modal, ResourceAutomation resources) {
 		super(frame, title, modal);
+		this.resources = resources;
 		response = CANCEL;
 		CenterAndResize(frame);
 	}
@@ -79,7 +74,7 @@ public abstract class CommonDialog extends JDialog
 		JPanel buttonPanel = new JPanel();
 
 		buttonOK = createButton(
-			ResourceAutomation.getResourceString(OK_LABEL),
+			resources.getResourceString(OK_LABEL),
 			'O',
 			new ActionListener(){
 				public void actionPerformed(ActionEvent event) {
@@ -87,14 +82,14 @@ public abstract class CommonDialog extends JDialog
 					try {
 						onOK();
 					} catch (Exception e) {
-						ErrorHandler.showError(CommonDialog.this, e);
+						ErrorHandler.showError(CommonDialog.this, e, resources);
 					}
 					dispose();
 				}
 			}, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "OKButton");
 
 		buttonCancel = createButton(
-			ResourceAutomation.getResourceString(CANCEL_LABEL),
+			resources.getResourceString(CANCEL_LABEL),
 			'C',
 			new ActionListener(){
 				public void actionPerformed(ActionEvent e) {
@@ -109,4 +104,7 @@ public abstract class CommonDialog extends JDialog
 	}
 
 
+	public ResourceAutomation getResources() {
+		return resources;
+	}
 }

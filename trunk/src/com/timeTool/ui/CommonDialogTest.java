@@ -49,7 +49,7 @@ public class CommonDialogTest extends TestCase {
 		private boolean onCancelledCalled = false;
 
 		CommonDialogMock() {
-			super(new JFrame(), "CommonDialogMock", false);
+			super(new JFrame(), "CommonDialogMock", false, null);
 		}
 
 

@@ -2,22 +2,37 @@ package com.timeTool.ui;
 
 import com.timeTool.ResourceAutomation;
 
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 public class AdjustTimeDialog extends JDialog {
 
     private JTextField textField;
     private String response = null;
 
-    public AdjustTimeDialog(Frame parent, String input) {
+    public AdjustTimeDialog(Frame parent, String input, ResourceAutomation resources) {
         super(parent, true);
 
-        String message = ResourceAutomation.getResourceString("AdjustMessage");
-        String title = ResourceAutomation.getResourceString("AdjustTitle");
-        String okLabel = ResourceAutomation.getResourceString("OKLabel");
-        String cancelLable = ResourceAutomation.getResourceString("CancelLabel");
+        String message = resources.getResourceString("AdjustMessage");
+        String title = resources.getResourceString("AdjustTitle");
+        String okLabel = resources.getResourceString("OKLabel");
+        String cancelLable = resources.getResourceString("CancelLabel");
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle(title);

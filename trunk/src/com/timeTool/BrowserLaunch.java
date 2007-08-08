@@ -10,8 +10,6 @@ package com.timeTool;
 //  Public Domain Software -- Free to Use as You Like  //
 /////////////////////////////////////////////////////////
 
-import com.timeTool.ResourceAutomation;
-
 import java.lang.reflect.Method;
 
 public class BrowserLaunch 
@@ -19,8 +17,15 @@ public class BrowserLaunch
 
    private static final String BROWSER_ERROR1 = "BrowserError1";
    private static final String BROWSER_ERROR2 = "BrowserError2";
+   private final ResourceAutomation resources;
 
-   public static void openURL(String url) 
+
+	public BrowserLaunch(ResourceAutomation resources) {
+		this.resources = resources;
+	}
+
+
+	public void openURL(String url)
    {
 	   try
 	   {
@@ -33,26 +38,28 @@ public class BrowserLaunch
 			   new Class[] {String.class});
 			   openURL.invoke(null, new Object[] {url});
 		   }
-		   else if (osName.startsWith("Windows"))
+		   else if (osName.startsWith("Windows")) {
 			   Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-		   else 
-		   { //assume Unix or Linux
+		   } else { //assume Unix or Linux
 			   String[] browsers = {
-					   "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+				   "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape"};
 			   String browser = null;
-			   for (int count = 0; count < browsers.length && browser == null; count++)
-			   if (Runtime.getRuntime().exec(
-					   new String[] {"which", browsers[count]}).waitFor() == 0)
-				   browser = browsers[count];
-			   if (browser == null)
-			   throw new Exception(ResourceAutomation.getResourceString(BROWSER_ERROR1));
-			   else
-			   Runtime.getRuntime().exec(new String[] {browser, url});
+			   for (int count = 0; count < browsers.length && browser == null; count++) {
+				   if (Runtime.getRuntime().exec(
+					   new String[]{"which", browsers[count]}).waitFor() == 0) {
+					   browser = browsers[count];
+				   }
+			   }
+			   if (browser == null) {
+				   throw new Exception(resources.getResourceString(BROWSER_ERROR1));
+			   } else {
+				   Runtime.getRuntime().exec(new String[]{browser, url});
+			   }
 		   }
 	   }
 	   catch (Exception e)
 	   {
-		   ErrorHandler.showError(null, e); 
+		   ErrorHandler.showError(null, e, resources);
 	   }
    	}
 }

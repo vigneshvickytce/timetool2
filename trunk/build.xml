@@ -80,14 +80,15 @@
       <copy todir="${build}">
          <fileset dir="${src}">
             <include name="**/*.properties" />
-         </fileset>
-         <fileset dir="${src}">
             <include name="**/*.gif" />
             <include name="**/*.png" />
-            <include name="**/*.properties" />
          </fileset>
+      </copy>
+      
+      <copy todir="${build}">
          <fileset dir="" excludes="**/ttdata.txt, **/TimeTool-notes-*.txt">
             <include name="**/*.gif" />
+            <include name="**/*.properties" />
             <include name="**/*.png" />
             <include name="**/*.dll"/>
             <include name="**/*.txt"/>
