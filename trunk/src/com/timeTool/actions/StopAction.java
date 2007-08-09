@@ -1,6 +1,7 @@
 package com.timeTool.actions;
 
 import com.timeTool.TimeTool;
+import com.timeTool.TaskModel;
 
 import java.awt.event.ActionEvent;
 
@@ -20,7 +21,7 @@ public class StopAction extends AbstractAction
     
     public void actionPerformed(ActionEvent e) 
     {
-    	controller.setCurrentRow(TimeTool.NO_ROW_SELECTED);
+    	controller.setCurrentRow(TaskModel.NO_ROW_SELECTED);
 	}
 
 
