@@ -21,7 +21,7 @@ public class ColumnHeaderListener extends MouseAdapter
 		final JTableHeader tableHeader = (JTableHeader)event.getSource();
 		final TableColumnModel colModel = tableHeader.getTable().getColumnModel();
 		final int index = colModel.getColumnIndexAtX(event.getX());
-//		model.sort(index);
+		model.sort(index);
 	}
 
 }
