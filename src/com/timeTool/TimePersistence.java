@@ -14,25 +14,22 @@ public class TimePersistence extends FilePersistence
 	public static final String CURRENT_TIME_TAG = "current_time";
 
 	private ExportVisitor formatter;
-	private final TimeTool controller;
+	private final TaskModel dataModel;
 	private final ResourceAutomation resources;
 
 
-	public TimePersistence(TimeTool controller, ResourceAutomation resources) {
-		this.controller = controller;
+	public TimePersistence(TaskModel dataModel, ResourceAutomation resources) {
+		this.dataModel = dataModel;
 		this.resources = resources;
 	}
 
 
 	public void loadFile() {
 
-		//remove all the old entries...
-		controller.clear();
-
 		if (!new File(TXTVisitor.DATA_FILE).exists()) {
-			controller.addRow("Default", "Default task created by TimeTool", 0);
-			controller.addRow("Admin", "Administrative time", 0);
-			controller.addRow("Lunch", "Lunch", 0);
+			dataModel.addRow("Default", "Default task created by TimeTool", 0);
+			dataModel.addRow("Admin", "Administrative time", 0);
+			dataModel.addRow("Lunch", "Lunch", 0);
 		} else {
 			try
 			{
@@ -53,7 +50,7 @@ public class TimePersistence extends FilePersistence
 						minutesAsString = minutesAsString.trim();
 						Integer minutes = new Integer(minutesAsString);
 
-						controller.addRow(id, description, minutes);
+						dataModel.addRow(id, description, minutes * 60000);
 					}
 					else
 					{
@@ -63,8 +60,7 @@ public class TimePersistence extends FilePersistence
 						{
 							//this is the current row tag
 							String currentRow = extractFromTag(record, CURRENT_ROW_TAG);
-							Integer row = new Integer(currentRow);
-							controller.setCurrentRow(row);
+							dataModel.setCurrentRow(currentRow);
 						}
 						else if (record.indexOf(CURRENT_TIME_TAG) == 1)
 						{
@@ -72,7 +68,7 @@ public class TimePersistence extends FilePersistence
 							String currentTime = extractFromTag(record, CURRENT_TIME_TAG);
 							long seconds = new Long(currentTime);
 							Date startTime = new Date(seconds);
-							controller.setStartTime(startTime);
+							dataModel.setStartTime(startTime);
 						}
 					}
 					record = file.readLine();
@@ -88,7 +84,7 @@ public class TimePersistence extends FilePersistence
 	}
 
 	public void saveFile(String path) throws Exception {
-		formatter = new TXTVisitor(controller);
+		formatter = new TXTVisitor(dataModel);
 		export(path);
 	}
 
@@ -115,7 +111,7 @@ public class TimePersistence extends FilePersistence
 
 	private void export(String path) throws Exception {
 		PrintWriter file = createWriter(path);
-		List<Task> tasks = controller.getTaskList();
+		List<Task> tasks = dataModel.asList();
 
 		file.write(formatter.getHeader());
 		for (Task task : tasks) {

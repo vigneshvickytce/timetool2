@@ -25,7 +25,7 @@ public class ColumnHeaderListener extends MouseAdapter
 
 		// The index of the column whose header was clicked
 		int index = colModel.getColumnIndexAtX(event.getX());
-		controller.sort(index);
+		throw new RuntimeException("Must implement sorting"); 
 		//tableHeader.set
 	}
 

@@ -31,7 +31,6 @@ public class AllTests
 		suite.addTestSuite(CommonDialogTest.class);
 		suite.addTestSuite(ResourceAutomationTest.class);
         suite.addTestSuite(AdjustTimeKeyHandlerTest.class);
-		suite.addTestSuite(TaskTest.class);
 		suite.addTestSuite(ExportOptionsTest.class);
 		return suite;
 	}

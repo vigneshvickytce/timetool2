@@ -1,8 +1,8 @@
 package com.timeTool.ui;
 
 import com.timeTool.ResourceAutomation;
-import com.timeTool.Task;
 import com.timeTool.TimeTool;
+import com.timeTool.Task;
 import com.timeTool.TimeTool.TimeToolListener;
 
 import java.awt.GridBagConstraints;
@@ -113,7 +113,7 @@ public class StatusBar extends JComponent
 
 								hourTotal.setText(controller.getTotalHours());
 
-								task.setText(controller.getCurrentTask());
+								task.setText(controller.getCurrentTaskDescription());
 							}
 						} catch (Throwable ex) {
 							ex.printStackTrace();
