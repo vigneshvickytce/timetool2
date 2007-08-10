@@ -21,7 +21,7 @@ public class StopAction extends AbstractAction
     
     public void actionPerformed(ActionEvent e) 
     {
-    	controller.setCurrentRow(TaskModel.NO_ROW_SELECTED);
+    	controller.setCurrentRow(null);
 	}
 
 

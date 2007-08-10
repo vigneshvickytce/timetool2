@@ -1,75 +1,18 @@
 package com.timeTool;
 
-public class Task 
-{
-	//@GuardedBy(this);
-	private long seconds; 
-	private String id;
-	private String description;
-	
-	public Task(String id, String description, long seconds) {
-		setId(id); 
-		setDescription(description); 
-		setSeconds(seconds); 
-	}
+/**
+ * Created by IntelliJ IDEA.
+ * User: hdarcy
+ * Date: Aug 9, 2007
+ * Time: 8:59:42 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public interface Task {
+    String getDescription();
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getId() {
-		return id;
-	} 
-	public synchronized void setSeconds(long seconds) {
-		this.seconds = seconds; 
-	}
-	public synchronized void addSeconds(long seconds) {
-		this.seconds += seconds;
-	}
-	public synchronized String getMinutes() {
-		Integer minutes = new Float(seconds / 60).intValue();
-		return minutes.toString(); 
-	}
-	
-	public synchronized String getHours() {
-		float hours = seconds; 
-		hours = hours / 3600; 
-		hours = (float)round((double)hours, 2);
-		return formatHours(Float.toString(hours));
-	}
+    String getId();
 
-	private double round(double val, int places) {
-		long factor = (long)Math.pow(10,places);
+    String getMinutes();
 
-		// Shift the decimal the correct number of places
-		// to the right.
-		val = val * factor;
-
-		// Round to the nearest integer.
-		long tmp = Math.round(val);
-
-		// Shift the decimal the correct number of places
-		// back to the left.
-		return (double)tmp / factor;
-	}
-	
-	public static String formatHours(String hours) {
-		String ret = hours.toString(); 
-		int index = hours.indexOf("."); 
-		int length = hours.length(); 
-		if (index == -1) {
-			ret = ret + ".00"; 
-		} else if ((index < (length-1)) && (index > (length-3))) {
-			ret = ret + "0"; 
-		} else if (index < (length-3)) {
-			ret = ret.substring(0, index+3);  
-		}
-		return ret; 
-	}
-	
+    String getHours();
 }

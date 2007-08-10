@@ -18,9 +18,8 @@ public class RenameAction extends AbstractAction
 		super(renameAction);
 		this.controller = controller; 
 	}
-    public void actionPerformed(ActionEvent e) 
-    {
+    public void actionPerformed(ActionEvent e) {
     	controller.renameDialog();
-	}
+    }
 
 }

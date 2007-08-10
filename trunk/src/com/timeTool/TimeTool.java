@@ -18,9 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
+import javax.swing.*;
 
 
 public class TimeTool {
@@ -30,12 +28,16 @@ public class TimeTool {
     private ScheduledExecutorService jobExecutor;
 	private final List<TimeToolListener> listeners = new ArrayList<TimeToolListener>();
     private ResourceAutomation resources;
-	private TaskModel rows;
+	private TaskModel dataModel;
 
-	public static void main(String[] args)
-
-	{
-		TimeTool controller = new TimeTool();
+	public static void main(String[] args)	{
+		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+            public void uncaughtException(Thread t, Throwable e) {
+                e.printStackTrace();
+            }
+        });
+        
+        TimeTool controller = new TimeTool();
 		try
 		{
             timeToolWindow = new TimeToolWindow(controller.resources, controller);
@@ -52,9 +54,11 @@ public class TimeTool {
 	public TimeTool() {
 		final TimeToolPreferences options = new TimeToolPreferences();
 		resources  = new ResourceAutomation(options.getSkin());
-		rows = new TaskModel(resources);
+		dataModel = new TaskModel();
 		jobExecutor = Executors.newScheduledThreadPool(2);
 
+        TimePersistence data = new TimePersistence(dataModel, resources);
+        data.loadFile();
 		startTimerJob();
 		startAutoSaveJob(options);
 	}
@@ -70,18 +74,14 @@ public class TimeTool {
 	}
 
 	public void addListener(TimeToolListener listener) {
-		listeners.add(listener);
+		synchronized(listeners) {
+            listeners.add(listener);
+        }
 	}
 
     public void addRow(String number, String description) {
-		Task row = rows.addRow(number, description);
-		for (TimeToolListener listener : listeners) {
-			listener.onTaskChange(row);
-		}
-	}
-
-	public void addRow(String number, String description, Integer minutes) {
-		rows.addRow(number, description, minutes.longValue() * 60);
+		Task row = dataModel.addRow(number, description);
+		update(row);
 	}
 
 	public void addTask() {
@@ -98,22 +98,16 @@ public class TimeTool {
 	}
 
 
-    public void adjust(String adjustment) throws Exception
-
-    {
-		Task task = rows.adjust(adjustment);
-		if (task != null) {
-			for (TimeToolListener listener : listeners) {
-				listener.onTaskChange(task);
-			}
-		}
-	}
+    public void adjust(String adjustment)  {
+        Task task = dataModel.adjust(adjustment);
+        update(task);
+    }
 
 
 	public void adjustTime(String initialValue)
 
 	{
-		if (getCurrentTask().equals(resources.getResourceString("NoActiveTask")))
+		if (getCurrentTaskDescription().equals(resources.getResourceString("NoActiveTask")))
 		{
 			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
 					resources.getResourceString("NoTaskSelected"),
@@ -128,12 +122,14 @@ public class TimeTool {
 		String response = dialog.getResponse();
 		if (response != null)
 		{
-			try
-			{
+			try {
 				adjust(response);
-			}
-			catch (Exception e)
-			{
+			} catch (NumberFormatException nfe) {
+                JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+						resources.getResourceString("NumericOnly"),
+						resources.getResourceString("GenericError"),
+						JOptionPane.DEFAULT_OPTION);
+            } catch (Exception e) {
 				JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
 						e.getMessage(),
 						resources.getResourceString("GenericError"),
@@ -143,22 +139,18 @@ public class TimeTool {
 	}
 
 	public void clear()	{
-		rows.clear();
+		dataModel.clear();
 	}
 
 
-	public void close()
-
-	{
+	public void close() {
 		saveTaskList();
 		System.exit(0);
 	}
 
 
-    public void exportTaskList()
-
-    {
-    	TimePersistence data = new TimePersistence(this, resources);
+    public void exportTaskList() {
+    	TimePersistence data = new TimePersistence(dataModel, resources);
     	FileDialog fileDialog = new FileDialog(timeToolWindow.getFrame(), "TimeTool - Export to CSV");
     	fileDialog.setMode(FileDialog.SAVE);
     	Date today = new Date();
@@ -178,12 +170,17 @@ public class TimeTool {
 		}
     }
 
-    public int getCurrentRow() {
-    	return rows.getCurrentRow();
+    public Task getCurrentTask() {
+    	return dataModel.getCurrentTask();
     }
 
-    public String getCurrentTask() {
-		return rows.getCurrentTask();
+    public String getCurrentTaskDescription() {
+        Task current = dataModel.getCurrentTask();
+        if (current == null) {
+            return resources.getResourceString("NoActiveTask");
+        } else {
+            return current.getDescription();
+        }
     }
 
 
@@ -193,31 +190,29 @@ public class TimeTool {
 	}
 
 	public int getRowCount() {
-		return rows.asList().size();
+		return dataModel.asList().size();
 	}
 
     public List<Task> getTaskList() {
-		return rows.asList();
+		return dataModel.asList();
 	}
 
     public Date getTime() {
-    	return rows.getTime();
+    	return dataModel.getCurrentTime();
     }
 
 	public Date getTimerStartTime() {
-		return rows.getStartTime();
+		return dataModel.getStartTime();
 	}
 
 
-    public String getTotalHours()
-
-    {
+    public String getTotalHours() {
     	float totalHours = 0;
-        for (Task row : rows.asList()) {
+        for (Task row : dataModel.asList()) {
             totalHours += new Float(row.getHours());
         }
 
-        return Task.formatHours(Float.toString(totalHours));
+        return EditableTask.formatHours(Float.toString(totalHours));
     }
 
 
@@ -225,27 +220,11 @@ public class TimeTool {
 
     {
     	int totalMinutes = 0;
-        for (Task row : rows.asList()) {
+        for (Task row : dataModel.asList()) {
             totalMinutes += new Integer(row.getMinutes());
         }
         return Integer.toString(totalMinutes);
     }
-
-
-	public Object getValueAt(int row, int col)
-
-	{
-		Task task = rows.asList().get(row);
-		if (col == 0) {
-			return task.getId();
-		} else if (col == 1) {
-			return task.getDescription();
-		} else if (col == 2) {
-			return task.getMinutes();
-		} else {
-			return task.getHours();
-		}
-	}
 
 	public void options() {
         final File originalSkin = new TimeToolPreferences().getSkin();
@@ -259,8 +238,10 @@ public class TimeTool {
             final Point origLocation = frame.getLocation();
             frame.setVisible(false);
             frame.dispose();
-			listeners.clear();
-			resources = new ResourceAutomation(newPrefs.getSkin());
+            synchronized (listeners) {
+                listeners.clear();
+            }
+            resources = new ResourceAutomation(newPrefs.getSkin());
             timeToolWindow = new TimeToolWindow(resources, this);
 			timeToolWindow.getFrame().setLocation(origLocation);
 			timeToolWindow.getFrame().setVisible(true);
@@ -272,70 +253,57 @@ public class TimeTool {
     public void reloadTaskList()
 
     {
-		rows.deselect();
-		TimePersistence data = new TimePersistence(this, resources);
-		data.loadFile();
-		for (TimeToolListener listener : listeners) {
-			listener.onTimerStopped();
-		}
+		dataModel.deselect();
+		TimePersistence data = new TimePersistence(dataModel, resources);
+		clear();
+        data.loadFile();
+        updateStopped();
+    }
+
+    private void updateStopped() {
+        synchronized (listeners) {
+            for (TimeToolListener listener : listeners) {
+                listener.onTimerStopped();
+            }
+        }
     }
 
 
-	public void removeRow(int row) {
-		rows.remove(row);
-		for (TimeToolListener listener : listeners) {
-			listener.onTimerStopped();
-		}
-	}
-
-
     public void removeRowDialog() {
-    	JTable taskList = timeToolWindow.getTaskList();
-		if (taskList.getSelectedRow() > -1)
-		{
-			int response =
-	    			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
-	    			resources.getResourceString("ConfirmDelete"),
-	    			resources.getResourceString("ConfirmDeleteTitle"),
-	    			JOptionPane.YES_NO_OPTION);
-	    	if (response == 0)
-	    	{
-	    		removeRow(timeToolWindow.getTaskList().getSelectedRow());
-	    	}
-       	}
-	}
-
-	private void rename(int currentRow, String id, String description) {
-		Task task = rows.rename(currentRow, id, description);
-		if (task != null) {
-			for (TimeToolListener listener : listeners) {
-				listener.onTaskChange(task);
-			}
-		}
+        Task task = getCurrentTask();
+        int response =
+                JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+                resources.getResourceString("ConfirmDelete"),
+                resources.getResourceString("ConfirmDeleteTitle"),
+                JOptionPane.YES_NO_OPTION);
+        if (response == 0) {
+            updateStopped();
+            Task removed = dataModel.remove(task);
+            if (removed != null) {
+                synchronized(listeners) {
+                    for (TimeToolListener listener : listeners) {
+                        listener.onTaskRemove(task); 
+                    }
+                }
+            }
+        }
 	}
 
 
-	public void renameDialog() {
-    	JTable taskList = timeToolWindow.getTaskList();
-    	int currentRow = taskList.getSelectedRow();
-
-		if (currentRow > -1)
-		{
-			Task task = rows.asList().get(currentRow);
-			RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription(), resources);
-			dialog.setVisible(true);
-			if (dialog.getResponse() == RenameDialog.OK) {
-	    		rename(currentRow, dialog.getTask(), dialog.getDescription());
-	    	}
-       	}
+    public void renameDialog() {
+        Task task = getCurrentTask();
+        RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription(), resources);
+        dialog.setVisible(true);
+        if (dialog.getResponse() == RenameDialog.OK) {
+            Task updated = dataModel.rename(task, dialog.getTask(), dialog.getDescription());
+            update(updated);
+        }
 	}
 
 	private void reset() {
-		rows.reset();
-		for (TimeToolListener listener : listeners) {
-			listener.onTimerStopped();
-		}
-	}
+		dataModel.reset();
+        updateStopped();
+    }
 
 
 	public void resetDialog(){
@@ -353,42 +321,30 @@ public class TimeTool {
 
 
     public void saveTaskList() {
-    	TimePersistence data = new TimePersistence(this, resources);
+    	TimePersistence data = new TimePersistence(dataModel, resources);
 		try {
 			data.saveFile(TXTVisitor.DATA_FILE);
-			for (TimeToolListener listener : listeners) {
-				listener.onSave();
-			}
+            synchronized (listeners) {
+                for (TimeToolListener listener : listeners) {
+                    listener.onSave();
+                }
+            }
         } catch (Exception e) {
 			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
 		}
     }
 
-    public void setCurrentRow(int index) {
-		final Task task = rows.setCurrentRow(index); 
+    public void setCurrentRow(String current) {
+		final Task task = dataModel.setCurrentRow(current);
 		if (task == null) {
-			for (TimeToolListener listener : listeners) {
-				listener.onTimerStopped();
-			}
-		} else {
-			for (TimeToolListener listener : listeners) {
-				listener.onTaskChange(task);
-			}
+            updateStopped();
+        } else {
+            update(task);
 		}
     }
 
 	public void setStartTime(Date startTime) {
-		rows.setStartTime(startTime);
-	}
-
-	public void sort(int index) {
-		Task task = rows.sort(index);
-
-		if (task != null) {
-			for (TimeToolListener listener : listeners) {
-				listener.onTaskChange(task);
-			}
-		}
+		dataModel.setStartTime(startTime);
 	}
 
     private void startAutoSaveJob(TimeToolPreferences options) {
@@ -422,23 +378,30 @@ public class TimeTool {
     }
 
     private void tick() {
-		Task task = rows.tick();
+		Task task = dataModel.tick();
 
-		if (task != null) {
-			for (TimeToolListener listener : listeners) {
-				listener.onTaskChange(task);
-			}
-		}
-	}
+        update(task);
+    }
+
+    private void update(Task task) {
+
+        synchronized(listeners) {
+            if (task != null) {
+                for (TimeToolListener listener : listeners) {
+                    listener.onTaskChange(task);
+                }
+            }
+        }
+    }
 
 
-	public static abstract class TimeToolListener {
+    public static abstract class TimeToolListener {
 
 		public void onSave(){}
 
+        public void onTaskChange(Task task){}
 
-		public void onTaskChange(Task task){}
-
+        public void onTaskRemove(Task task){}
 
 		public void onTimerStopped(){}
 	}

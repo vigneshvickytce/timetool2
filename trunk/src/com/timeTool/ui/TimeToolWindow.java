@@ -1,11 +1,7 @@
 package com.timeTool.ui;
 
 import com.jeans.trayicon.WindowsTrayIcon;
-import com.timeTool.ErrorHandler;
-import com.timeTool.ResourceAutomation;
-import com.timeTool.Task;
-import com.timeTool.TimePersistence;
-import com.timeTool.TimeTool;
+import com.timeTool.*;
 import com.timeTool.TimeTool.TimeToolListener;
 import com.timeTool.actions.AboutAction;
 import com.timeTool.actions.AddAction;
@@ -31,9 +27,6 @@ import java.awt.Event;
 import java.awt.Frame;
 import java.awt.Container;
 import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GradientPaint;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -76,25 +69,11 @@ public final class TimeToolWindow
 	private final Color tableForegroundColor;
 	private final Color tableHeaderBackgroundColor;
 	private final Color tableHeaderForegroundColor;
-	private JTable taskList;
-	private JPanel myPanel = new JPanel(true) {
-		// Overrides parent
-
-		public void paintComponent(Graphics g1) {
-			if ((frameBackgroundColor == null) || (tableBackgroundColor == null)) {
-				super.paintComponent(g1);
-			} else {
-				Graphics2D g2 = (Graphics2D) g1;
-				g2.setPaint(new GradientPaint(0, 0, frameBackgroundColor, 0, getHeight(), tableBackgroundColor));
-				g2.fillRect(0, 0, getWidth(), getHeight());
-				super.paintComponent(g2);
-			}
-		}
-	};
+	private final JTable taskList;
+	private final JPanel myPanel;
 
 	public TimeToolWindow(ResourceAutomation resources, TimeTool controller) {
 
-		setLookAndFeel();
 		this.resources = resources;
 		this.controller = controller;
 		frameBackgroundColor = resources.getColorResource("FrameBackgroundColor");
@@ -104,8 +83,12 @@ public final class TimeToolWindow
 		tableHeaderBackgroundColor = resources.getColorResource("TableHeaderBackgroundColor");
 		tableHeaderForegroundColor = resources.getColorResource("TableHeaderForegroundColor");
 
+        myPanel = new GradientPanel(frameBackgroundColor, tableBackgroundColor);
+        setLookAndFeel();
+        dataTable = new TaskTable(controller.getTaskList(), resources);
+        taskList = createTaskList();
 
-		resources.createCommandTable(new Action[]{
+        resources.createCommandTable(new Action[]{
 				 new StopAction(controller),
 				 new AboutAction(controller),
 				 new AdjustAction(controller),
@@ -124,8 +107,6 @@ public final class TimeToolWindow
 				 new SupportAction(resources)
 			});
 
-		dataTable = new TaskTable(controller, resources);
-		createTaskList();
 		final JScrollPane scroller = enableScrolling();
 		initPanel(scroller);
 		resources.createMenubar();
@@ -166,38 +147,19 @@ public final class TimeToolWindow
 				}
 			}, KeyStroke.getKeyStroke(key), JComponent.WHEN_IN_FOCUSED_WINDOW);
 		}
-
-		myPanel.registerKeyboardAction(new ActionListener(){
-
-				public void actionPerformed(ActionEvent e) {
-					int row = controller.getCurrentRow();
-					controller.setCurrentRow(--row);
-				}
-			}, KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-		myPanel.registerKeyboardAction(new ActionListener(){
-
-				public void actionPerformed(ActionEvent e) {
-					int row = controller.getCurrentRow();
-					controller.setCurrentRow(++row);
-				}
-			}, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 	}
 
 
-	private void createTaskList()
-
-	{
-		TimePersistence data = new TimePersistence(controller, resources);
-		data.loadFile();
-		taskList = new JTable(dataTable);
-		if (tableBackgroundColor != null) taskList.setBackground(tableBackgroundColor);
-		if (tableForegroundColor != null) taskList.setForeground(tableForegroundColor);
-		taskList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		taskList.setColumnSelectionAllowed(false);
-		taskList.setShowVerticalLines(false);
-		taskList.setShowHorizontalLines(false);
-		if (tableBackgroundColor != null) taskList.getTableHeader().setBackground(tableBackgroundColor);
-		if (tableForegroundColor != null) taskList.getTableHeader().setForeground(tableForegroundColor);
+	private JTable createTaskList() {
+		JTable table = new JTable(dataTable);
+		if (tableBackgroundColor != null) table.setBackground(tableBackgroundColor);
+		if (tableForegroundColor != null) table.setForeground(tableForegroundColor);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setColumnSelectionAllowed(false);
+		table.setShowVerticalLines(false);
+		table.setShowHorizontalLines(false);
+		if (tableBackgroundColor != null) table.getTableHeader().setBackground(tableBackgroundColor);
+		if (tableForegroundColor != null) table.getTableHeader().setForeground(tableForegroundColor);
 
 
 		if (tableHeaderBackgroundColor != null && tableHeaderForegroundColor != null) {
@@ -210,14 +172,15 @@ public final class TimeToolWindow
 					return comp;
 				}
 			};
-			final Enumeration<TableColumn> columns = taskList.getColumnModel().getColumns();
+			final Enumeration<TableColumn> columns = table.getColumnModel().getColumns();
 			while(columns.hasMoreElements()) {
 				columns.nextElement().setHeaderRenderer(headerRenderer);
 			}
 		}
-		trapTableClick();
-		trapColumnClick();
-	}
+		trapTableClick(table);
+		trapColumnClick(table);
+        return table;
+    }
 
 
 	private void createTrayIcon()
@@ -338,35 +301,18 @@ public final class TimeToolWindow
 	}
 
 
-	private void trapColumnClick()
+	private void trapColumnClick(JTable table)
 
 	{
-		JTableHeader header = taskList.getTableHeader();
+		JTableHeader header = table.getTableHeader();
 		header.addMouseListener(new ColumnHeaderListener(controller));
 	}
 
 
-	private void trapTableClick()
-
-	{
+	private void trapTableClick(JTable table) {
 		//Ask to be notified of selection changes.
-		ListSelectionModel rowSM = taskList.getSelectionModel();
-		rowSM.addListSelectionListener(new ListSelectionListener()
-		{
-
-			public void valueChanged(ListSelectionEvent event)
-
-			{
-				//Ignore extra messages.
-				if (event.getValueIsAdjusting()) return;
-
-				ListSelectionModel model = (ListSelectionModel)event.getSource();
-				if (!model.isSelectionEmpty()) {
-					int selectedRow = model.getMinSelectionIndex();
-					controller.setCurrentRow(selectedRow);
-				}
-			}
-		});
+		ListSelectionModel rowSM = table.getSelectionModel();
+		rowSM.addListSelectionListener(new MyListSelectionListener());
 	}
 
 
@@ -399,22 +345,33 @@ public final class TimeToolWindow
 			SwingUtilities.invokeLater(new Runnable() {
 
 				public void run() {
-					taskList.repaint();
-					trayIcon.setToolTipText(
+                    if (dataTable.getIndexOf(task) == -1) {
+                        dataTable.add(task);
+                        dataTable.fireTableDataChanged();
+                    }
+                    taskList.repaint(); 
+                    trayIcon.setToolTipText(
 						title + "\n" +
 							controller.getTotalHours() + " " + hoursLabel + "\n" +
 							task.getId() + " " + task.getHours() + " " + hoursLabel);
+                    int index = dataTable.getIndexOf(controller.getCurrentTask());
 
-					taskList.changeSelection(controller.getCurrentRow(),
-						1,
-						false,
-						false);
+                    taskList.changeSelection(index, 1, false, false);
 				}
 			});
 		}
 
 
-		@Override
+        public void onTaskRemove(final Task task) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    dataTable.remove(task);
+                    dataTable.fireTableDataChanged();
+                }
+            }); 
+        }
+
+        @Override
 
 		public void onTimerStopped() {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -488,4 +445,20 @@ public final class TimeToolWindow
 			}
 		}
 	}
+
+    private class MyListSelectionListener implements ListSelectionListener {
+
+        public void valueChanged(ListSelectionEvent event) {
+            //Ignore extra messages.
+            if (event.getValueIsAdjusting()) return;
+
+            ListSelectionModel model = (ListSelectionModel)event.getSource();
+            if (!model.isSelectionEmpty()) {
+                int selectedRow = model.getMinSelectionIndex();
+                Task task = dataTable.getTaskAt(selectedRow); 
+                controller.setCurrentRow(task.getId());
+            }
+        }
+    }
+
 }

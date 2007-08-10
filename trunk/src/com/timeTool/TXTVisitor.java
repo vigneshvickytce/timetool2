@@ -3,10 +3,10 @@ package com.timeTool;
 public class TXTVisitor extends ExportVisitor
 {
 	public static final String DATA_FILE = "ttdata.txt";
-	private final TimeTool controller;
+	private final TaskModel dataModel;
 
-	public TXTVisitor(TimeTool controller) {
-		this.controller = controller;
+	public TXTVisitor(TaskModel dataModel) {
+		this.dataModel = dataModel;
 	}
 
 
@@ -46,15 +46,21 @@ public class TXTVisitor extends ExportVisitor
 
 	private String getFormattedRowTag() {
 		FilePersistence fileHelper = new FilePersistence();
-		String currentRow = Integer.toString(controller.getCurrentRow());
-        return fileHelper.wrapDataInTag(currentRow, TimePersistence.CURRENT_ROW_TAG);
+        Task task = dataModel.getCurrentTask();
+        final String id;
+        if (task == null) {
+            id = "";
+        } else {
+            id = task.getId();
+        }
+        return fileHelper.wrapDataInTag(id, TimePersistence.CURRENT_ROW_TAG);
 	}
 	private String getFormattedTimeTag() {
 		FilePersistence fileHelper = new FilePersistence();
 		String tag = "";
-		if (controller.getTimerStartTime() != null)
+		if (dataModel.getStartTime() != null)
 		{
-			long time = controller.getTimerStartTime().getTime();
+			long time = dataModel.getStartTime().getTime();
 			String timeString = Long.toString(time);
 			tag = fileHelper.wrapDataInTag(timeString, TimePersistence.CURRENT_TIME_TAG);
 		}
