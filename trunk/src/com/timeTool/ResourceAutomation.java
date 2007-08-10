@@ -39,7 +39,6 @@ public class ResourceAutomation {
     private ResourceBundle resources;
     private JToolBar toolbar;
     private Hashtable<String, JMenuItem> menuItems;
-    private JMenuBar menubar;
     private Hashtable<String, Action> commands = new Hashtable<String, Action>();
     
     public static final String imageSuffix = "Image";
@@ -226,19 +225,6 @@ public class ResourceAutomation {
     	return toolbar;
     }
 
-    public JMenuBar createMenubar() {
-    	JMenuBar mb = new JMenuBar();
-
-    	String[] menuKeys = tokenize(getResourceString("menubar"));
-		for (String menuKey : menuKeys) {
-			JMenu m = createMenu(menuKey);
-			if (m != null) {
-				mb.add(m);
-			}
-		}
-     	this.menubar = mb;
-    	return mb;
-     }
     /**
      * Create a menu for the app.  By default this pulls the
      * definition of the menu from the associated resource file.
@@ -382,8 +368,17 @@ public class ResourceAutomation {
 
 
 
-    public JMenuBar getMenubar() {
-    	return menubar;
+    public JMenuBar createMenubar() {
+		JMenuBar mb = new JMenuBar();
+
+		String[] menuKeys = tokenize(getResourceString("menubar"));
+		for (String menuKey : menuKeys) {
+			JMenu m = createMenu(menuKey);
+			if (m != null) {
+				mb.add(m);
+			}
+		}
+		return mb;
     }
 
 

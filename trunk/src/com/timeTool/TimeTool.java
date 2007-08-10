@@ -25,18 +25,19 @@ public class TimeTool {
 
 	private static TimeToolWindow timeToolWindow;
     private ScheduledFuture<?> autoSaveJob;
+	private TaskModel dataModel;
     private ScheduledExecutorService jobExecutor;
 	private final List<TimeToolListener> listeners = new ArrayList<TimeToolListener>();
     private ResourceAutomation resources;
-	private TaskModel dataModel;
 
 	public static void main(String[] args)	{
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
+
             public void uncaughtException(Thread t, Throwable e) {
                 e.printStackTrace();
             }
         });
-        
+
         TimeTool controller = new TimeTool();
 		try
 		{
@@ -44,7 +45,7 @@ public class TimeTool {
 			timeToolWindow.show();
 	    } catch (Exception e) {
             e.printStackTrace();
-            JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+            JOptionPane.showConfirmDialog(null,
 	    			e.getMessage(),
 	    			controller.resources.getResourceString("GenericError"),
 	    			JOptionPane.DEFAULT_OPTION);
@@ -63,9 +64,9 @@ public class TimeTool {
 		startAutoSaveJob(options);
 	}
 
-	public void about() {
+	public void about(JFrame frame) {
 		JOptionPane.showConfirmDialog(
-				timeToolWindow.getFrame(),
+				frame,
 				resources.getResourceString("AboutMessage"),
 				resources.getResourceString("AboutTitle"),
 				JOptionPane.DEFAULT_OPTION,
@@ -84,44 +85,40 @@ public class TimeTool {
 		update(row);
 	}
 
-	public void addTask() {
+	public void addTask(JFrame frame) {
 		try
 		{
-			AddTaskDialog dialog = new AddTaskDialog(timeToolWindow.getFrame(), resources);
+			AddTaskDialog dialog = new AddTaskDialog(frame, resources);
 			dialog.setVisible(true);
 			if (dialog.getResponse() == AddTaskDialog.OK) {
 				addRow(dialog.getTask(), dialog.getDescription());
 			}
 		} catch (IllegalArgumentException e) {
-			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+			JOptionPane.showConfirmDialog(frame,
 					"A task with this ID already exists.",
 					resources.getResourceString("InformationTitle"),
 					JOptionPane.DEFAULT_OPTION);
 		} catch (Exception e) {
-			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
+			ErrorHandler.showError(frame, e, resources);
 		}
 	}
-
 
     public void adjust(String adjustment)  {
         Task task = dataModel.adjust(adjustment);
         update(task);
     }
 
-
-	public void adjustTime(String initialValue)
-
-	{
+	public void adjustTime(String initialValue, JFrame frame) {
 		if (getCurrentTaskDescription().equals(resources.getResourceString("NoActiveTask")))
 		{
-			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+			JOptionPane.showConfirmDialog(frame,
 					resources.getResourceString("NoTaskSelected"),
 					resources.getResourceString("InformationTitle"),
 					JOptionPane.DEFAULT_OPTION);
 			return;
 		}
 
-		AdjustTimeDialog dialog = new AdjustTimeDialog(timeToolWindow.getFrame(), initialValue, resources);
+		AdjustTimeDialog dialog = new AdjustTimeDialog(frame, initialValue, resources);
 		dialog.setVisible(true);
 		dialog.dispose();
 		String response = dialog.getResponse();
@@ -130,12 +127,12 @@ public class TimeTool {
 			try {
 				adjust(response);
 			} catch (NumberFormatException nfe) {
-                JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+                JOptionPane.showConfirmDialog(frame,
 						resources.getResourceString("NumericOnly"),
 						resources.getResourceString("GenericError"),
 						JOptionPane.DEFAULT_OPTION);
             } catch (Exception e) {
-				JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+				JOptionPane.showConfirmDialog(frame,
 						e.getMessage(),
 						resources.getResourceString("GenericError"),
 						JOptionPane.DEFAULT_OPTION);
@@ -147,16 +144,14 @@ public class TimeTool {
 		dataModel.clear();
 	}
 
-
-	public void close() {
-		saveTaskList();
+	public void close(JFrame frame) {
+		saveTaskList(frame);
 		System.exit(0);
 	}
 
-
-    public void exportTaskList() {
+    public void exportTaskList(JFrame frame) {
     	TimePersistence data = new TimePersistence(dataModel, resources);
-    	FileDialog fileDialog = new FileDialog(timeToolWindow.getFrame(), "TimeTool - Export to CSV");
+    	FileDialog fileDialog = new FileDialog(frame, "TimeTool - Export to CSV");
     	fileDialog.setMode(FileDialog.SAVE);
     	Date today = new Date();
     	String filename = getDefaultFilename(today);
@@ -171,7 +166,7 @@ public class TimeTool {
 		}
 		catch (Exception e)
 		{
-			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
+			ErrorHandler.showError(frame, e, resources);
 		}
     }
 
@@ -187,7 +182,6 @@ public class TimeTool {
             return current.getDescription();
         }
     }
-
 
 	public String getDefaultFilename(Date today) {
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMd");
@@ -210,7 +204,6 @@ public class TimeTool {
 		return dataModel.getStartTime();
 	}
 
-
     public String getTotalHours() {
     	float totalHours = 0;
         for (Task row : dataModel.asList()) {
@@ -231,25 +224,23 @@ public class TimeTool {
         return Integer.toString(totalMinutes);
     }
 
-	public void options() {
+	public void options(JFrame frame) {
         final File originalSkin = new TimeToolPreferences().getSkin();
-        OptionsDialog dialog = new OptionsDialog(timeToolWindow.getFrame(), resources);
+        OptionsDialog dialog = new OptionsDialog(frame, resources);
         dialog.setVisible(true);
         final TimeToolPreferences newPrefs = new TimeToolPreferences();
         if (!originalSkin.equals(newPrefs.getSkin())) {
-            saveTaskList();
+            saveTaskList(frame);
 
-            final JFrame frame = timeToolWindow.getFrame();
-            final Point origLocation = frame.getLocation();
-            frame.setVisible(false);
-            frame.dispose();
+            final Point origLocation = timeToolWindow.getLocation();
+            timeToolWindow.hide();
             synchronized (listeners) {
                 listeners.clear();
             }
             resources = new ResourceAutomation(newPrefs.getSkin());
             timeToolWindow = new TimeToolWindow(resources, this);
-			timeToolWindow.getFrame().setLocation(origLocation);
-			timeToolWindow.getFrame().setVisible(true);
+			timeToolWindow.setLocation(origLocation);
+			timeToolWindow.show();
         }
         startAutoSaveJob(newPrefs);
     }
@@ -265,19 +256,10 @@ public class TimeTool {
         updateStopped();
     }
 
-    private void updateStopped() {
-        synchronized (listeners) {
-            for (TimeToolListener listener : listeners) {
-                listener.onTimerStopped();
-            }
-        }
-    }
-
-
-    public void removeRowDialog() {
+    public void removeRowDialog(JFrame frame) {
         Task task = getCurrentTask();
         int response =
-                JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+                JOptionPane.showConfirmDialog(frame,
                 resources.getResourceString("ConfirmDelete"),
                 resources.getResourceString("ConfirmDeleteTitle"),
                 JOptionPane.YES_NO_OPTION);
@@ -287,17 +269,16 @@ public class TimeTool {
             if (removed != null) {
                 synchronized(listeners) {
                     for (TimeToolListener listener : listeners) {
-                        listener.onTaskRemove(task); 
+                        listener.onTaskRemove(task);
                     }
                 }
             }
         }
 	}
 
-
-    public void renameDialog() {
+    public void renameDialog(JFrame frame) {
         Task task = getCurrentTask();
-        RenameDialog dialog = new RenameDialog(timeToolWindow.getFrame(), task.getId(), task.getDescription(), resources);
+        RenameDialog dialog = new RenameDialog(frame, task.getId(), task.getDescription(), resources);
         dialog.setVisible(true);
         if (dialog.getResponse() == RenameDialog.OK) {
             Task updated = dataModel.rename(task, dialog.getTask(), dialog.getDescription());
@@ -310,10 +291,9 @@ public class TimeTool {
         updateStopped();
     }
 
-
-	public void resetDialog(){
+	public void resetDialog(JFrame frame){
 		int response =
-			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+			JOptionPane.showConfirmDialog(frame,
 			resources.getResourceString("ConfirmReset"),
 			resources.getResourceString("ConfirmResetTitle"),
 			JOptionPane.YES_NO_OPTION);
@@ -324,8 +304,7 @@ public class TimeTool {
 		}
 	}
 
-
-    public void saveTaskList() {
+    public void saveTaskList(JFrame frame) {
     	TimePersistence data = new TimePersistence(dataModel, resources);
 		try {
 			data.saveFile(TXTVisitor.DATA_FILE);
@@ -335,7 +314,7 @@ public class TimeTool {
                 }
             }
         } catch (Exception e) {
-			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
+			ErrorHandler.showError(frame, e, resources);
 		}
     }
 
@@ -361,7 +340,7 @@ public class TimeTool {
 
             public void run() {
 				try {
-					saveTaskList();
+					saveTaskList(null);
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
@@ -389,7 +368,6 @@ public class TimeTool {
     }
 
     private void update(Task task) {
-
         synchronized(listeners) {
             if (task != null) {
                 for (TimeToolListener listener : listeners) {
@@ -399,14 +377,25 @@ public class TimeTool {
         }
     }
 
+    private void updateStopped() {
+        synchronized (listeners) {
+            for (TimeToolListener listener : listeners) {
+                listener.onTimerStopped();
+            }
+        }
+    }
+
 
     public static abstract class TimeToolListener {
 
 		public void onSave(){}
 
+
         public void onTaskChange(Task task){}
 
+
         public void onTaskRemove(Task task){}
+
 
 		public void onTimerStopped(){}
 	}
