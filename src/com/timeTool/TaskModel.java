@@ -14,9 +14,10 @@ public class TaskModel
 	private final List<EditableTask> list = new ArrayList<EditableTask>();
 
 	public synchronized Task addRow(String number, String description) {
-	   final EditableTask row = new EditableTask(number, description, 0);
-	   list.add(row);
-	   return row;
+		final EditableTask row = new EditableTask(number, description, 0);
+		if (list.contains(row)) throw new IllegalArgumentException();
+	   	list.add(row);
+	   	return row;
 	}
 
 	public synchronized Task addRow(String number, String description, long millis) {
