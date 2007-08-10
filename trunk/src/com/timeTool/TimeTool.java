@@ -92,6 +92,11 @@ public class TimeTool {
 			if (dialog.getResponse() == AddTaskDialog.OK) {
 				addRow(dialog.getTask(), dialog.getDescription());
 			}
+		} catch (IllegalArgumentException e) {
+			JOptionPane.showConfirmDialog(timeToolWindow.getFrame(),
+					"A task with this ID already exists.",
+					resources.getResourceString("InformationTitle"),
+					JOptionPane.DEFAULT_OPTION);
 		} catch (Exception e) {
 			ErrorHandler.showError(timeToolWindow.getFrame(), e, resources);
 		}
