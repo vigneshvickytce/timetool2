@@ -147,6 +147,11 @@
    </target>
 	
 	
+    <target name="marathon"> 
+       <exec executable="marathon.bat" failonerror="true" > 
+          <arg line="-batch ./marathon"/>  
+       </exec> 
+    </target> 
 	
 
    
