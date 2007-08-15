@@ -50,6 +50,7 @@ public class AdjustTimeDialog extends JDialog {
 
         Container panel = new JPanel(new BorderLayout(2, 4));
         textField = new JTextField(input, 20);
+        textField.setName("textField"); 
         panel.add(new JLabel(message), BorderLayout.NORTH);
         panel.add(textField, BorderLayout.CENTER);
         panel.add(buttons, BorderLayout.SOUTH);

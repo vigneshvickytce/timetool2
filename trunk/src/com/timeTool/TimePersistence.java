@@ -27,7 +27,7 @@ public class TimePersistence extends FilePersistence
 	public void loadFile() {
 
 		if (!new File(TXTVisitor.DATA_FILE).exists()) {
-			dataModel.addRow("Default", "Default task created by TimeTool", 0);
+			dataModel.addRow("Defaul", "Default task created by TimeTool", 0);
 			dataModel.addRow("Admin", "Administrative time", 0);
 			dataModel.addRow("Lunch", "Lunch", 0);
 		} else {
