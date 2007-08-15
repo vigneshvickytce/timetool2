@@ -163,6 +163,7 @@ public final class TimeToolWindow {
 
 	private JTable createTaskList(final Color headerBgColor, final Color headerFgColor, Color tableBgColor, Color tableFgColor) {
 		JTable table = new JTable(dataTable);
+		table.setName("taskTable"); 
 		if (tableBgColor != null) table.setBackground(tableBgColor);
 		if (tableFgColor != null) table.setForeground(tableFgColor);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

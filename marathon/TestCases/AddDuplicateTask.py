@@ -11,7 +11,7 @@ def test():
 			select('TextField1', 'A new task')
 			keystroke('TextField1', 'Enter')
 		close()
-		assert_p('Table', 'Content', '[[Defaul, Default task created by TimeTool, 0, 0.00], [Admin, Administrative time, 0, 0.00], [Lunch, Lunch, 0, 0.00], [NewTas, A new task, 0, 0.00]]')
+		assert_p('taskTable', 'Content', '[[Defaul, Default task created by TimeTool, 0, 0.00], [Admin, Administrative time, 0, 0.00], [Lunch, Lunch, 0, 0.00], [NewTas, A new task, 0, 0.00]]')
 
 		click('add')
 
@@ -26,7 +26,7 @@ def test():
 			click('OK')
 		close()
 
-		select('Table', 'cell:Description,3(A new task)')
+		select('taskTable', 'cell:Description,3(A new task)')
 		click('delete')
 
 		if window('Confirm Delete'):
@@ -34,7 +34,6 @@ def test():
 			click('Yes')
 		close()
 
-		assert_p('Table', 'Content', '[[Defaul, Default task created by TimeTool, 0, 0.00], [Admin, Administrative time, 0, 0.00], [Lunch, Lunch, 0, 0.00]]')
+		assert_p('taskTable', 'Content', '[[Defaul, Default task created by TimeTool, 0, 0.00], [Admin, Administrative time, 0, 0.00], [Lunch, Lunch, 0, 0.00]]')
 
-		select_menu('File>>Save', 'Ctrl+S')
 	close()

@@ -2,7 +2,7 @@ from com.timeTool import TimeTool
 
 class Fixture:
 	def start_application(self):
-		args = []
+		args = ['-notasks']
 		TimeTool.main(args)
 
 	def teardown(self):

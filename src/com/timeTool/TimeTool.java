@@ -31,6 +31,14 @@ public class TimeTool {
     private ResourceAutomation resources;
 
 	public static void main(String[] args)	{
+		
+		final boolean suppressTasks; 
+		if ((args.length == 1) && ("-notasks".equals(args[0]))) {
+				suppressTasks = true; 
+		} else {
+			suppressTasks = false; 
+		}
+
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 
             public void uncaughtException(Thread t, Throwable e) {
@@ -38,7 +46,7 @@ public class TimeTool {
             }
         });
 
-        TimeTool controller = new TimeTool();
+        TimeTool controller = new TimeTool(suppressTasks);
 		try
 		{
             timeToolWindow = new TimeToolWindow(controller.resources, controller);
@@ -52,7 +60,7 @@ public class TimeTool {
 		}
 	}
 
-	public TimeTool() {
+	public TimeTool(boolean suppressTasks) {
 		final TimeToolPreferences options = new TimeToolPreferences();
 		resources  = new ResourceAutomation(options.getSkin());
 		dataModel = new TaskModel();
@@ -60,8 +68,10 @@ public class TimeTool {
 
         TimePersistence data = new TimePersistence(dataModel, resources);
         data.loadFile();
-		startTimerJob();
-		startAutoSaveJob(options);
+    if (!suppressTasks) {
+	  	startTimerJob();
+  		startAutoSaveJob(options);
+    }
 	}
 
 	public void about(JFrame frame) {
