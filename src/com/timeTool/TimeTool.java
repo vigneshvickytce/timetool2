@@ -5,6 +5,7 @@ import com.timeTool.ui.AdjustTimeDialog;
 import com.timeTool.ui.OptionsDialog;
 import com.timeTool.ui.RenameDialog;
 import com.timeTool.ui.TimeToolWindow;
+import com.timeTool.IdleJob.IdleListener;
 
 import java.awt.FileDialog;
 import java.awt.Point;
@@ -24,7 +25,8 @@ import javax.swing.*;
 public class TimeTool {
 
 	private static TimeToolWindow timeToolWindow;
-    private ScheduledFuture<?> autoSaveJob;
+	private ScheduledFuture<?> autoSaveJob;
+	private ScheduledFuture<?> idleJob;
 	private TaskModel dataModel;
     private ScheduledExecutorService jobExecutor;
 	private final List<TimeToolListener> listeners = new ArrayList<TimeToolListener>();
@@ -32,11 +34,11 @@ public class TimeTool {
 
 	public static void main(String[] args)	{
 		
-		final boolean suppressTasks; 
+		final boolean suppressTasks;
 		if ((args.length == 1) && ("-notasks".equals(args[0]))) {
-				suppressTasks = true; 
+			suppressTasks = true; 
 		} else {
-			suppressTasks = false; 
+			suppressTasks = false;
 		}
 
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
@@ -68,11 +70,14 @@ public class TimeTool {
 
         TimePersistence data = new TimePersistence(dataModel, resources);
         data.loadFile();
-    if (!suppressTasks) {
-	  	startTimerJob();
-  		startAutoSaveJob(options);
-    }
+		if (!suppressTasks) {
+			startTimerJob();
+			startIdleJob(options);
+			startAutoSaveJob(options);
+		}
 	}
+
+
 
 	public void about(JFrame frame) {
 		JOptionPane.showConfirmDialog(
@@ -253,7 +258,8 @@ public class TimeTool {
 			timeToolWindow.show();
         }
         startAutoSaveJob(newPrefs);
-    }
+		startIdleJob(newPrefs); 
+	}
 
 
     public void reloadTaskList()
@@ -358,7 +364,25 @@ public class TimeTool {
         }, interval, interval, TimeUnit.SECONDS);
     }
 
-    private void startTimerJob() {
+	private void startIdleJob(TimeToolPreferences options) {
+		final int interval = options.getIdleThreshold();
+		if (idleJob != null) {
+			idleJob.cancel(false);
+		}
+
+		idleJob = jobExecutor.scheduleAtFixedRate(new IdleJob(new IdleListener(){
+			public void onIdle(int seconds) {
+				synchronized (listeners) {
+					for (TimeToolListener listener : listeners) {
+						listener.onIdle(seconds);
+					}
+				}
+			}
+		}, interval), 1L, 1L, TimeUnit.SECONDS);
+	}
+
+
+	private void startTimerJob() {
         jobExecutor.scheduleAtFixedRate(new Runnable(){
 
             public void run() {
@@ -408,5 +432,7 @@ public class TimeTool {
 
 
 		public void onTimerStopped(){}
+
+		public void onIdle(int Seconds){}
 	}
 }

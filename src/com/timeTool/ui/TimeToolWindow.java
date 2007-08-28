@@ -1,7 +1,10 @@
 package com.timeTool.ui;
 
 import com.jeans.trayicon.WindowsTrayIcon;
-import com.timeTool.*;
+import com.timeTool.ErrorHandler;
+import com.timeTool.ResourceAutomation;
+import com.timeTool.Task;
+import com.timeTool.TimeTool;
 import com.timeTool.TimeTool.TimeToolListener;
 import com.timeTool.actions.AboutAction;
 import com.timeTool.actions.AddAction;
@@ -23,10 +26,10 @@ import com.timeTool.actions.SupportAction;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Event;
 import java.awt.Frame;
-import java.awt.Container;
-import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,10 +52,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 public final class TimeToolWindow {
 
@@ -127,6 +130,7 @@ public final class TimeToolWindow {
 
 		controller.addListener(new TrayListener());
 		controller.addListener(new TableListener());
+		controller.addListener(new IdleListener(controller, resources));
 	}
 
 	private void createKeyHandler(final TimeTool controller) {
