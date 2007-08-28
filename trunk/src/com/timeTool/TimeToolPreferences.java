@@ -7,20 +7,23 @@ public class TimeToolPreferences extends FilePersistence
 	private static final String DELIMITER_TAG = "delimiter";
 	private static final String DECIMAL_TAG = "decimal";
     private static final String QUOTE_TAG = "quotes";
-    private static final String AUTOSAVE_TAG = "autosave";
+	private static final String AUTOSAVE_TAG = "autosave";
+	private static final String IDLE_TAG = "idle_threshold";
     private static final String SKIN_TAG = "skin";
 	public static final String OPTIONS_FILENAME = "ttoptions.xml";
 	public static final String DEFAULT_QUOTE = "\"";
 	public static final String DEFAULT_DECIMAL = ".";
     public static final String DEFAULT_DELIMITER = ",";
     public static final File DEFAULT_SKIN = new File("skins" + File.separator + "TimeTool Classic");
-    public static final long DEFAULT_AUTOSAVE = 30;
+	public static final long DEFAULT_AUTOSAVE = 30;
+	public static final int DEFAULT_IDLE = 180;
 
 
     private String quotes;
 	private String decimal;
     private String delimiter;
-    private long autosave;
+	private long autosave;
+	private int idleThreshold;
     private File skinDir;
 
     public TimeToolPreferences() {
@@ -55,7 +58,15 @@ public class TimeToolPreferences extends FilePersistence
         return autosave;
     }
 
-    public void setAutosave(long autosave) {
+	public int getIdleThreshold() {
+		return idleThreshold;
+	}
+
+	public void setIdleThreshold(int idleThreshold) {
+		this.idleThreshold = idleThreshold;
+	}
+
+	public void setAutosave(long autosave) {
         this.autosave = autosave;
     }
 
@@ -82,7 +93,8 @@ public class TimeToolPreferences extends FilePersistence
 		file.write(wrapDataInTag(decimal, DECIMAL_TAG)); 
         file.write(wrapDataInTag(delimiter, DELIMITER_TAG));
         file.write(wrapDataInTag(skinDir.toString(), SKIN_TAG));
-        file.write(wrapDataInTag(String.valueOf(autosave), AUTOSAVE_TAG));
+		file.write(wrapDataInTag(String.valueOf(autosave), AUTOSAVE_TAG));
+		file.write(wrapDataInTag(String.valueOf(idleThreshold), IDLE_TAG));
 		file.write("</timetool_options>");
 
 		file.close();
@@ -93,7 +105,8 @@ public class TimeToolPreferences extends FilePersistence
 		setDecimal(DEFAULT_DECIMAL);
 		setQuotes(DEFAULT_QUOTE);
         setAutosave(DEFAULT_AUTOSAVE);
-        setSkin(DEFAULT_SKIN);
+		setIdleThreshold(DEFAULT_IDLE);
+		setSkin(DEFAULT_SKIN);
 
         String xmlStream = "";
 		BufferedReader file = null; 
@@ -110,11 +123,17 @@ public class TimeToolPreferences extends FilePersistence
 			decimal = extractFromTag(xmlStream, DECIMAL_TAG);
             delimiter = extractFromTag(xmlStream, DELIMITER_TAG);
 
-            //may be null
-            final String saveValue = extractFromTag(xmlStream, AUTOSAVE_TAG);
-            if (saveValue != null) {
-                autosave = Long.valueOf(saveValue);
-            }
+			//may be null
+			final String saveValue = extractFromTag(xmlStream, AUTOSAVE_TAG);
+			if (saveValue != null) {
+				autosave = Long.valueOf(saveValue);
+			}
+
+			//may be null
+			final String idleValue = extractFromTag(xmlStream, IDLE_TAG);
+			if (idleValue != null) {
+				idleThreshold = Integer.valueOf(idleValue);
+			}
 
             //may be null
             final String skinValue = extractFromTag(xmlStream, SKIN_TAG);
@@ -131,5 +150,6 @@ public class TimeToolPreferences extends FilePersistence
 			}
 		}
 	}
+
 
 }

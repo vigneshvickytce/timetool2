@@ -22,17 +22,21 @@ import javax.swing.JTextField;
 
 public class GeneralOptions implements OptionsPlugin {
 	private JTextField autosaveField;
-	private Component parent;
+	private JTextField idleField;
 	private JComboBox skinField;
 
 	public JPanel configurationOptions(CommonDialog parent) {
 
-		this.parent = parent;
 		final TimeToolPreferences options = new TimeToolPreferences();
 		final JLabel autosaveLabel = new JLabel("Time (seconds) between automatic save");
 		autosaveField = new JFormattedTextField(NumberFormat.getNumberInstance());
 		autosaveField.setText(String.valueOf(options.getAutosave()));
 		autosaveField.setColumns(5);
+
+		final JLabel idleLabel = new JLabel("Time (seconds) before going idle");
+		idleField = new JFormattedTextField(NumberFormat.getNumberInstance());
+		idleField.setText(String.valueOf(options.getIdleThreshold()));
+		idleField.setColumns(5);
 
 		final JLabel skinLabel = new JLabel("Look and Feel");
 		skinField = new JComboBox(options.getAvailableSkins());
@@ -51,7 +55,9 @@ public class GeneralOptions implements OptionsPlugin {
 		panel.add(autosaveField,	   new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0, NORTHWEST, NONE, new Insets(2,2,2,2), 0, 0));
 		panel.add(skinLabel,	       new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
 		panel.add(skinField,	       new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0, NORTHWEST, NONE, new Insets(2,2,2,2), 0, 0));
-		panel.add(parent.getButtons(), new GridBagConstraints(1, 2, 1, 1, 0.0, 1.0, SOUTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+		panel.add(idleLabel,	   	   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0, NORTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
+		panel.add(idleField,	       new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0, NORTHWEST, NONE, new Insets(2,2,2,2), 0, 0));
+		panel.add(parent.getButtons(), new GridBagConstraints(1, 3, 1, 1, 0.0, 1.0, SOUTHEAST, NONE, new Insets(2,2,2,2), 0, 0));
 
 		return panel;
 	}
@@ -61,11 +67,11 @@ public class GeneralOptions implements OptionsPlugin {
 	}
 
 	public void onOK() throws Exception {
-		String value = autosaveField.getText();
 
 		final TimeToolPreferences options = new TimeToolPreferences();
 		options.setSkin((File)skinField.getSelectedItem());
-		options.setAutosave(Long.valueOf(value));
+		options.setAutosave(Long.valueOf(autosaveField.getText()));
+		options.setIdleThreshold(Integer.valueOf(idleField.getText()));
 		options.serialize();
 	}
 
