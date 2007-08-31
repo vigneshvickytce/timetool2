@@ -5,7 +5,6 @@ import com.timeTool.ui.AdjustTimeDialog;
 import com.timeTool.ui.OptionsDialog;
 import com.timeTool.ui.RenameDialog;
 import com.timeTool.ui.TimeToolWindow;
-import com.timeTool.IdleJob.IdleListener;
 
 import java.awt.FileDialog;
 import java.awt.Point;
@@ -14,9 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
@@ -25,21 +21,15 @@ import javax.swing.*;
 public class TimeTool {
 
 	private static TimeToolWindow timeToolWindow;
-	private ScheduledFuture<?> autoSaveJob;
-	private ScheduledFuture<?> idleJob;
 	private TaskModel dataModel;
-    private ScheduledExecutorService jobExecutor;
+    private WorkQueue workQueue = new WorkQueue();
 	private final List<TimeToolListener> listeners = new ArrayList<TimeToolListener>();
     private ResourceAutomation resources;
 
 	public static void main(String[] args)	{
 		
 		final boolean suppressTasks;
-		if ((args.length == 1) && ("-notasks".equals(args[0]))) {
-			suppressTasks = true; 
-		} else {
-			suppressTasks = false;
-		}
+		suppressTasks = (args.length == 1) && ("-notasks".equals(args[0]));
 
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler(){
 
@@ -66,14 +56,11 @@ public class TimeTool {
 		final TimeToolPreferences options = new TimeToolPreferences();
 		resources  = new ResourceAutomation(options.getSkin());
 		dataModel = new TaskModel();
-		jobExecutor = Executors.newScheduledThreadPool(2);
 
         TimePersistence data = new TimePersistence(dataModel, resources);
         data.loadFile();
 		if (!suppressTasks) {
-			startTimerJob();
-			startIdleJob(options);
-			startAutoSaveJob(options);
+			startJobs(options);
 		}
 	}
 
@@ -257,12 +244,19 @@ public class TimeTool {
 			timeToolWindow.setLocation(origLocation);
 			timeToolWindow.show();
         }
-        startAutoSaveJob(newPrefs);
-		startIdleJob(newPrefs); 
+		workQueue.clear();
+		startJobs(newPrefs);
 	}
 
 
-    public void reloadTaskList()
+	private void startJobs(TimeToolPreferences prefs) {
+		startTimerJob();
+		startAutoSaveJob(prefs);
+		startIdleJob(prefs);
+	}
+
+
+	public void reloadTaskList()
 
     {
 		dataModel.deselect();
@@ -349,10 +343,8 @@ public class TimeTool {
 
     private void startAutoSaveJob(TimeToolPreferences options) {
         long interval = options.getAutosave();
-        if (autoSaveJob != null) {
-            autoSaveJob.cancel(false);
-        }
-        autoSaveJob = jobExecutor.scheduleAtFixedRate(new Runnable() {
+
+		workQueue.scheduleAtFixedRate(new java.lang.Runnable() {
 
             public void run() {
 				try {
@@ -365,25 +357,26 @@ public class TimeTool {
     }
 
 	private void startIdleJob(TimeToolPreferences options) {
-		final int interval = options.getIdleThreshold();
-		if (idleJob != null) {
-			idleJob.cancel(false);
-		}
 
-		idleJob = jobExecutor.scheduleAtFixedRate(new IdleJob(new IdleListener(){
-			public void onIdle(int seconds) {
-				synchronized (listeners) {
-					for (TimeToolListener listener : listeners) {
-						listener.onIdle(seconds);
+		workQueue.scheduleAtFixedRate(
+			new IdleJob(
+				new Runnable<Integer>(){
+					public void run(Integer seconds) {
+						if (dataModel.getCurrentTask() != null) {
+							synchronized (listeners) {
+								for (TimeToolListener listener : listeners) {
+									listener.onIdle(seconds);
+								}
+							}
+						}
 					}
-				}
-			}
-		}, interval), 1L, 1L, TimeUnit.SECONDS);
+				}, options.getIdleThreshold())
+			, 1L, 1L, TimeUnit.SECONDS);
 	}
 
 
 	private void startTimerJob() {
-        jobExecutor.scheduleAtFixedRate(new Runnable(){
+        workQueue.scheduleAtFixedRate(new java.lang.Runnable(){
 
             public void run() {
 				try {
