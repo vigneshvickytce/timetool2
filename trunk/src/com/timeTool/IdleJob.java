@@ -6,8 +6,8 @@ package com.timeTool;
  * the listener with the number of seconds the computer has been idle. 
  */
 
-public final class IdleJob implements Runnable {
-	private final IdleListener listener;
+public final class IdleJob implements java.lang.Runnable {
+	private final Runnable<Integer> listener;
 	private final int idleThreshold;
 
 
@@ -15,7 +15,7 @@ public final class IdleJob implements Runnable {
 		System.loadLibrary("IdleTime");
 	}
 
-	public IdleJob(IdleListener listener, int idleThreshold) {
+	public IdleJob(Runnable<Integer> listener, int idleThreshold) {
 		this.listener = listener;
 		this.idleThreshold = idleThreshold;
 	}
@@ -23,10 +23,10 @@ public final class IdleJob implements Runnable {
 	public void run() {
 		final int idleTime = getIdleTime();
 		if (idleTime > idleThreshold) {
-			listener.onIdle(idleTime);
+			System.out.println("Idle - Seconds Reported: " + idleTime); 
+			listener.run(idleTime);
 		}
 	}
-
 
 	/**
 	 * Returns Idle Time in seconds.
@@ -36,11 +36,4 @@ public final class IdleJob implements Runnable {
 	 */
 	private native int getIdleTime();
 
-
-	/**
-	 * Interface that gets notified when an idle occurs. 
-	 */
-	public interface IdleListener {
-		void onIdle(int seconds); 
-	}
 }
