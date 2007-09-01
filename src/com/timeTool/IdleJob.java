@@ -23,7 +23,6 @@ public final class IdleJob implements java.lang.Runnable {
 	public void run() {
 		final int idleTime = getIdleTime();
 		if (idleTime > idleThreshold) {
-			System.out.println("Idle - Seconds Reported: " + idleTime); 
 			listener.run(idleTime);
 		}
 	}

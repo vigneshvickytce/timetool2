@@ -16,12 +16,9 @@ import java.awt.Toolkit;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JWindow;
-import javax.swing.BorderFactory;
+import javax.swing.*;
 
 /**
 *  This class pops open a window when an idle occurs. 
@@ -32,17 +29,18 @@ import javax.swing.BorderFactory;
 class IdleListener extends TimeToolListener {
 	private final String labelTemplate;
 	private JLabel timeLabel;
-	private JWindow dialog;
+	private JDialog dialog;
 	private int idleSeconds = 0;
 	final TimeTool controller;
 
 
-	public IdleListener(final TimeTool controller, ResourceAutomation resources) {
+    public IdleListener(final TimeTool controller, ResourceAutomation resources) {
 		this.controller = controller;
-		dialog = new JWindow();
+		dialog = new JDialog();
 		dialog.setAlwaysOnTop(true);
+        dialog.setUndecorated(true);
 
-		labelTemplate = resources.getResourceString("IdleLabel1");
+        labelTemplate = resources.getResourceString("IdleLabel1");
 		timeLabel = new JLabel(labelTemplate);
 
 		final JPanel pane = new JPanel();
@@ -50,17 +48,25 @@ class IdleListener extends TimeToolListener {
 		pane.setLayout(new GridBagLayout());
 		final JButton keepButton = new JButton(resources.getResourceString("IdleButtonKeep"));
 		final JButton discardButton = new JButton(resources.getResourceString("IdleButtonDiscard"));
-		keepButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				dialog.setVisible(false);
-			}
-		});
-		discardButton.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e) {
-				dialog.setVisible(false);
-				controller.adjust("-" + (idleSeconds / 60));
-			}
-		});
+
+        keepButton.setMnemonic('k');
+        ActionListener keepAction = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.setVisible(false);
+            }
+        };
+        keepButton.addActionListener(keepAction);
+
+        discardButton.setMnemonic('d');
+        ActionListener discardAction = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.setVisible(false);
+                controller.adjust("-" + (idleSeconds / 60));
+            }
+        };
+        discardButton.registerKeyboardAction(discardAction,
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        discardButton.addActionListener(discardAction);
 
 		pane.add(timeLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, CENTER, HORIZONTAL, new Insets(2,2,2,2), 0, 0));
 		pane.add(new JLabel(resources.getResourceString("IdleLabel2")), new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, CENTER, HORIZONTAL, new Insets(2,2,2,2), 0, 0));
@@ -74,18 +80,32 @@ class IdleListener extends TimeToolListener {
 
 	@Override
 	public void onIdle(int seconds) {
-		idleSeconds = seconds; 
-		timeLabel.setText(labelTemplate.replace("$minutes", String.valueOf(seconds / 60)));
-		dialog.pack();
-		final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		final GraphicsDevice screen = env.getDefaultScreenDevice();
-        final GraphicsConfiguration config = screen.getDefaultConfiguration();
-		final Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(config);
-		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		final Dimension dialogSize = dialog.getSize();
-		dialog.setLocation(
-			(int)(screenSize.getWidth() - dialogSize.getWidth() - insets.right - 2),
-			(int)(screenSize.getHeight() - dialogSize.getHeight() - insets.bottom - 2));
-		dialog.setVisible(true);
-	}
+        if (seconds < idleSeconds) {
+            //when the seconds resets we need to accumulate the time
+            idleSeconds += seconds;             
+        } else {
+            idleSeconds = seconds;
+        }
+        System.out.println("Idle: Seconds accumulated: " + idleSeconds);
+
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                timeLabel.setText(labelTemplate.replace("$minutes", String.valueOf(idleSeconds / 60)));
+                dialog.pack();
+                final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                final GraphicsDevice screen = env.getDefaultScreenDevice();
+                final GraphicsConfiguration config = screen.getDefaultConfiguration();
+                final Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(config);
+                final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+                final Dimension dialogSize = dialog.getSize();
+                dialog.setLocation(
+                    (int)(screenSize.getWidth() - dialogSize.getWidth() - insets.right - 2),
+                    (int)(screenSize.getHeight() - dialogSize.getHeight() - insets.bottom - 2));
+
+                if (!dialog.isVisible()) {
+                    dialog.setVisible(true);
+                }
+            }
+        }); 
+    }
 }
